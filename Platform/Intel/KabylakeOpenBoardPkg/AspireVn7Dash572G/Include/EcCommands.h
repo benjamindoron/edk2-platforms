@@ -39,6 +39,8 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 // New commands and command parameters should only be written by the host when IBF=0.
 // Data read from the EC data port is valid only when OBF=1.
 //
-#define EC_C_FAB_ID                    0x0D    // Get the board fab ID in the lower 3 bits
+// TODO: It's unclear if the EC has such a command. Currently, we read model ID from ADCs.
+// As a definition is required for build, use a known safe command: EC query will do nicely.
+#define EC_C_FAB_ID                    0x84    // Get the board fab ID in the lower 3 bits
 
 #endif // EC_COMMANDS_H_

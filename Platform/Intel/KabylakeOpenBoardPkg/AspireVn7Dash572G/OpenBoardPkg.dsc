@@ -1,5 +1,5 @@
 ## @file
-#  The main build description file for the KabylakeRvp3 board.
+#  The main build description file for the Aspire VN7-572G board.
 #
 # Copyright (c) 2017 - 2021, Intel Corporation. All rights reserved.<BR>
 #
@@ -11,7 +11,7 @@
   DEFINE      PLATFORM_SI_PACKAGE             = KabylakeSiliconPkg
   DEFINE      PLATFORM_SI_BIN_PACKAGE         = KabylakeSiliconBinPkg
   DEFINE      PLATFORM_BOARD_PACKAGE          = KabylakeOpenBoardPkg
-  DEFINE      BOARD                           = KabylakeRvp3
+  DEFINE      BOARD                           = AspireVn7Dash572G
   DEFINE      PROJECT                         = $(PLATFORM_BOARD_PACKAGE)/$(BOARD)
   DEFINE      PEI_ARCH                        = IA32
   DEFINE      DXE_ARCH                        = X64
@@ -20,10 +20,19 @@
   #
   # Default value for OpenBoardPkg.fdf use
   #
-  DEFINE BIOS_SIZE_OPTION = SIZE_70
+  DEFINE BIOS_SIZE_OPTION = SIZE_60
+
+  #
+  # Debug logging
+  #
+  DEFINE USE_PEI_SPI_LOGGING = TRUE
+  # TODO: Support PEI in-memory logging
+  DEFINE USE_MEMORY_LOGGING  = TRUE
+  DEFINE RELEASE_LOGGING     = ($(USE_MEMORY_LOGGING) || $(USE_PEI_SPI_LOGGING))
+  DEFINE TESTING             = TRUE
 
   PLATFORM_NAME                               = $(PLATFORM_PACKAGE)
-  PLATFORM_GUID                               = 8470676C-18E8-467F-B126-28DB1941AA5A
+  PLATFORM_GUID                               = AEEEF17C-36B6-4B68-949A-1E54CB33492F
   PLATFORM_VERSION                            = 0.1
   DSC_SPECIFICATION                           = 0x00010005
   OUTPUT_DIRECTORY                            = Build/$(PROJECT)
@@ -79,8 +88,9 @@
 ################################################################################
 [SkuIds]
   0x00|DEFAULT                # 0|DEFAULT is reserved and always required.
-  0x04|KabylakeRvp3
-  0x60|KabyLakeYLpddr3Rvp3
+  # For further details on specific SKUs (which dGPU installed), see EC page of schematics
+  0x41|RayleighSLx_dGPU       # Detect the UMA board by GPIO
+  0x42|NewgateSLx_dGPU
 
 ################################################################################
 #
@@ -132,6 +142,13 @@
   #######################################
   FspWrapperApiLib|IntelFsp2WrapperPkg/Library/BaseFspWrapperApiLib/BaseFspWrapperApiLib.inf
   FspWrapperApiTestLib|IntelFsp2WrapperPkg/Library/PeiFspWrapperApiTestLib/PeiFspWrapperApiTestLib.inf
+  # This board will set debugging library instances; FIXME: UART2 not used
+  SerialPortLib|MdePkg/Library/BaseSerialPortLibNull/BaseSerialPortLibNull.inf
+  #rm
+  CacheAsRamLib|IntelFsp2Pkg/Library/BaseCacheAsRamLib/BaseCacheAsRamLib.inf
+  FspPlatformLib|IntelFsp2Pkg/Library/BaseFspPlatformLib/BaseFspPlatformLib.inf
+  FspCommonLib|IntelFsp2Pkg/Library/BaseFspCommonLib/BaseFspCommonLib.inf
+  FspSwitchStackLib|IntelFsp2Pkg/Library/BaseFspSwitchStackLib/BaseFspSwitchStackLib.inf
 
   #######################################
   # Silicon Initialization Package
@@ -168,6 +185,7 @@
   # Board Package
   #######################################
   EcLib|$(PLATFORM_BOARD_PACKAGE)/Library/BaseEcLib/BaseEcLib.inf
+  BoardEcLib|$(PROJECT)/Library/BoardEcLib/BoardEcLib.inf
   GpioExpanderLib|$(PLATFORM_BOARD_PACKAGE)/Library/BaseGpioExpanderLib/BaseGpioExpanderLib.inf
   I2cAccessLib|$(PLATFORM_BOARD_PACKAGE)/Library/PeiI2cAccessLib/PeiI2cAccessLib.inf
   PlatformSecLib|$(PLATFORM_PACKAGE)/FspWrapper/Library/SecFspWrapperPlatformSecLib/SecFspWrapperPlatformSecLib.inf
@@ -181,7 +199,7 @@
   #######################################
   # Board-specific
   #######################################
-  PlatformHookLib|$(PROJECT)/Library/BasePlatformHookLib/BasePlatformHookLib.inf
+  PlatformHookLib|MdeModulePkg/Library/BasePlatformHookLibNull/BasePlatformHookLibNull.inf
 !if gIntelFsp2WrapperTokenSpaceGuid.PcdFspModeSelection == 1
   #
   # FSP API mode
@@ -194,14 +212,36 @@
   SiliconPolicyUpdateLib|$(PROJECT)/Policy/Library/PeiSiliconPolicyUpdateLib/PeiSiliconPolicyUpdateLib.inf
 !endif
 
-[LibraryClasses.IA32.SEC]
+# NB: MinPlatform sets a NULL DebugLib and only overrides it for DEBUG builds
+# TODO: Now that all debug logging is routed through RSC, correct the defines
+[LibraryClasses.common.SEC]
+  #######################################
+  # Edk2 Packages
+  #######################################
+  DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
+
   #######################################
   # Platform Package
   #######################################
   TestPointCheckLib|$(PLATFORM_PACKAGE)/Test/Library/TestPointCheckLib/SecTestPointCheckLib.inf
   SecBoardInitLib|$(PLATFORM_PACKAGE)/PlatformInit/Library/SecBoardInitLibNull/SecBoardInitLibNull.inf
 
+[LibraryClasses.common.PEI_CORE]
+  #######################################
+  # Edk2 Packages
+  #######################################
+!if $(USE_PEI_SPI_LOGGING) == TRUE
+  DebugLib|MdeModulePkg/Library/PeiDxeDebugLibReportStatusCode/PeiDxeDebugLibReportStatusCode.inf
+!endif
+
 [LibraryClasses.common.PEIM]
+  #######################################
+  # Edk2 Packages
+  #######################################
+!if $(USE_PEI_SPI_LOGGING) == TRUE
+  DebugLib|MdeModulePkg/Library/PeiDxeDebugLibReportStatusCode/PeiDxeDebugLibReportStatusCode.inf
+!endif
+
   #######################################
   # Silicon Package
   #######################################
@@ -214,7 +254,7 @@
   FspWrapperPlatformLib|$(PLATFORM_PACKAGE)/FspWrapper/Library/PeiFspWrapperPlatformLib/PeiFspWrapperPlatformLib.inf
   MultiBoardInitSupportLib|$(PLATFORM_PACKAGE)/PlatformInit/Library/MultiBoardInitSupportLib/PeiMultiBoardInitSupportLib.inf
   TestPointLib|$(PLATFORM_PACKAGE)/Test/Library/TestPointLib/PeiTestPointLib.inf
-!if $(TARGET) == DEBUG
+!if ($(TARGET) == DEBUG || $(TESTING) == TRUE)
   TestPointCheckLib|$(PLATFORM_PACKAGE)/Test/Library/TestPointCheckLib/PeiTestPointCheckLib.inf
 !endif
   SetCacheMtrrLib|$(PLATFORM_PACKAGE)/Library/SetCacheMtrrLib/SetCacheMtrrLibNull.inf
@@ -228,7 +268,22 @@
   PeiTbtPolicyLib|$(PLATFORM_BOARD_PACKAGE)/Features/Tbt/Library/PeiTbtPolicyLib/PeiTbtPolicyLib.inf
 !endif
 
+[LibraryClasses.common.DXE_CORE]
+  #######################################
+  # Edk2 Packages
+  #######################################
+!if $(USE_MEMORY_LOGGING) == TRUE
+  DebugLib|MdeModulePkg/Library/PeiDxeDebugLibReportStatusCode/PeiDxeDebugLibReportStatusCode.inf
+!endif
+
 [LibraryClasses.common.DXE_DRIVER]
+  #######################################
+  # Edk2 Packages
+  #######################################
+!if $(USE_MEMORY_LOGGING) == TRUE
+  DebugLib|MdeModulePkg/Library/PeiDxeDebugLibReportStatusCode/PeiDxeDebugLibReportStatusCode.inf
+!endif
+
   #######################################
   # Silicon Initialization Package
   #######################################
@@ -244,7 +299,7 @@
   MultiBoardInitSupportLib|$(PLATFORM_PACKAGE)/PlatformInit/Library/MultiBoardInitSupportLib/DxeMultiBoardInitSupportLib.inf
   TestPointLib|$(PLATFORM_PACKAGE)/Test/Library/TestPointLib/DxeTestPointLib.inf
 
-!if $(TARGET) == DEBUG
+!if ($(TARGET) == DEBUG || $(TESTING) == TRUE)
   TestPointCheckLib|$(PLATFORM_PACKAGE)/Test/Library/TestPointCheckLib/DxeTestPointCheckLib.inf
 !endif
   #######################################
@@ -258,13 +313,35 @@
   #######################################
   SiliconPolicyUpdateLib|$(PROJECT)/Policy/Library/DxeSiliconPolicyUpdateLib/DxeSiliconPolicyUpdateLib.inf
 
-[LibraryClasses.X64.DXE_RUNTIME_DRIVER]
+[LibraryClasses.common.DXE_RUNTIME_DRIVER]
+  #######################################
+  # Edk2 Packages
+  #######################################
+!if $(USE_MEMORY_LOGGING) == TRUE
+  DebugLib|MdeModulePkg/Library/PeiDxeDebugLibReportStatusCode/PeiDxeDebugLibReportStatusCode.inf
+!endif
+
   #######################################
   # Silicon Initialization Package
   #######################################
   ResetSystemLib|$(PLATFORM_SI_PACKAGE)/Pch/Library/DxeRuntimeResetSystemLib/DxeRuntimeResetSystemLib.inf
 
-[LibraryClasses.X64.DXE_SMM_DRIVER]
+[LibraryClasses.common.SMM_CORE]
+  #######################################
+  # Edk2 Packages
+  #######################################
+!if $(USE_MEMORY_LOGGING) == TRUE
+  DebugLib|MdeModulePkg/Library/PeiDxeDebugLibReportStatusCode/PeiDxeDebugLibReportStatusCode.inf
+!endif
+
+[LibraryClasses.common.DXE_SMM_DRIVER]
+  #######################################
+  # Edk2 Packages
+  #######################################
+!if $(USE_MEMORY_LOGGING) == TRUE
+  DebugLib|MdeModulePkg/Library/PeiDxeDebugLibReportStatusCode/PeiDxeDebugLibReportStatusCode.inf
+!endif
+
   #######################################
   # Silicon Initialization Package
   #######################################
@@ -276,9 +353,11 @@
   BoardAcpiEnableLib|$(PLATFORM_PACKAGE)/Acpi/Library/MultiBoardAcpiSupportLib/SmmMultiBoardAcpiSupportLib.inf
   MultiBoardAcpiSupportLib|$(PLATFORM_PACKAGE)/Acpi/Library/MultiBoardAcpiSupportLib/SmmMultiBoardAcpiSupportLib.inf
   TestPointLib|$(PLATFORM_PACKAGE)/Test/Library/TestPointLib/SmmTestPointLib.inf
-!if $(TARGET) == DEBUG
+!if ($(TARGET) == DEBUG || $(TESTING) == TRUE)
   TestPointCheckLib|$(PLATFORM_PACKAGE)/Test/Library/TestPointCheckLib/SmmTestPointCheckLib.inf
 !endif
+
+# TODO: DebugLib override for UEFI_DRIVER and UEFI_APPLICATION?
 
 #######################################
 # PEI Components
@@ -292,6 +371,17 @@
   UefiCpuPkg/SecCore/SecCore.inf {
     <LibraryClasses>
       PcdLib|MdePkg/Library/PeiPcdLib/PeiPcdLib.inf
+  }
+
+  MdeModulePkg/Universal/StatusCodeHandler/Pei/StatusCodeHandlerPei.inf {
+    <LibraryClasses>
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
+!if $(USE_PEI_SPI_LOGGING) == TRUE
+      SerialPortLib|$(PLATFORM_BOARD_PACKAGE)/Library/PeiSerialPortLibSpiFlash/PeiSerialPortLibSpiFlash.inf
+!endif
+    <PcdsFixedAtBuild>
+      gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseMemory|FALSE
+      gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseSerial|$(USE_PEI_SPI_LOGGING)
   }
 
 !if gIntelFsp2WrapperTokenSpaceGuid.PcdFspModeSelection == 1
@@ -401,6 +491,14 @@
   #######################################
   # Edk2 Packages
   #######################################
+  MdeModulePkg/Universal/StatusCodeHandler/RuntimeDxe/StatusCodeHandlerRuntimeDxe.inf {
+    <LibraryClasses>
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
+  }
+  MdeModulePkg/Universal/StatusCodeHandler/Smm/StatusCodeHandlerSmm.inf {
+    <LibraryClasses>
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
+  }
   MdeModulePkg/Bus/Ata/AtaAtapiPassThru/AtaAtapiPassThru.inf
   MdeModulePkg/Bus/Ata/AtaBusDxe/AtaBusDxe.inf
   MdeModulePkg/Bus/Pci/PciHostBridgeDxe/PciHostBridgeDxe.inf
@@ -514,6 +612,7 @@
         NULL|$(PROJECT)/Library/BoardAcpiLib/DxeMultiBoardAcpiSupportLib.inf
       !endif
   }
+  $(PROJECT)/Acpi/BoardAcpiTables.inf
 !endif
   BoardModulePkg/LegacySioDxe/LegacySioDxe.inf
   BoardModulePkg/BoardBdsHookDxe/BoardBdsHookDxe.inf

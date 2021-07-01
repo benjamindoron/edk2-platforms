@@ -133,10 +133,6 @@ PeiFspPchPolicyUpdate (
   IN OUT FSPS_UPD    *FspsUpd
   )
 {
-
-  FspsUpd->FspsConfig.PchSubSystemVendorId = V_PCH_INTEL_VENDOR_ID;
-  FspsUpd->FspsConfig.PchSubSystemId       = V_PCH_DEFAULT_SID;
-
   FspsUpd->FspsConfig.PchPcieDeviceOverrideTablePtr = (UINT32) mPcieDeviceTable;
 
   InternalAddPlatformVerbTables (FspsUpd, PchHdaCodecPlatformOnboard, PcdGet8 (PcdAudioConnector));

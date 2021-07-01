@@ -13,6 +13,8 @@
 #
 ################################################################################
 
+# NB: Many "*Size" UPDs may not be hooked up!
+
 [PcdsFixedAtBuild.common]
   ######################################
   # Key Boot Stage and FSP configuration
@@ -68,9 +70,9 @@
 
   gIntelFsp2PkgTokenSpaceGuid.PcdTemporaryRamBase|0xFEF00000
   gIntelFsp2PkgTokenSpaceGuid.PcdTemporaryRamSize|0x00040000
-  gSiPkgTokenSpaceGuid.PcdTemporaryRamBase|0xFEF80000
+  gSiPkgTokenSpaceGuid.PcdTemporaryRamBase|0xFEF80000  # Not right, but unused
   gSiPkgTokenSpaceGuid.PcdTemporaryRamSize|0x00040000
-  gSiPkgTokenSpaceGuid.PcdTsegSize|0x1000000
+  gSiPkgTokenSpaceGuid.PcdTsegSize|0x1000000  # Now hooked up
 
 !if gIntelFsp2WrapperTokenSpaceGuid.PcdFspModeSelection == 1
   #
@@ -82,7 +84,7 @@
   # FSP API mode does not need to enlarge the boot loader stack size
   # since the stacks are separate.
   #
-  gSiPkgTokenSpaceGuid.PcdPeiTemporaryRamStackSize|0x20000
+  gSiPkgTokenSpaceGuid.PcdPeiTemporaryRamStackSize|0x20000  # Not hooked up, not used (functionally equivalent)
 !else
   #
   # In FSP Dispatch mode boot loader stack size must be large
@@ -110,6 +112,18 @@
   gUefiCpuPkgTokenSpaceGuid.PcdCpuSmmEnableBspElection|FALSE
   gUefiCpuPkgTokenSpaceGuid.PcdCpuSmmProfileEnable|FALSE
   gEfiMdeModulePkgTokenSpaceGuid.PcdInstallAcpiSdtProtocol|TRUE
+# TODO: Prune this list to relevant features only
+!if gMinPlatformPkgTokenSpaceGuid.PcdBootStage >= 6
+  gAcpiDebugFeaturePkgTokenSpaceGuid.PcdAcpiDebugFeatureEnable            |TRUE
+  gIpmiFeaturePkgTokenSpaceGuid.PcdIpmiFeatureEnable                      |FALSE
+  gNetworkFeaturePkgTokenSpaceGuid.PcdNetworkFeatureEnable                |FALSE
+  gS3FeaturePkgTokenSpaceGuid.PcdS3FeatureEnable                          |TRUE
+  gSmbiosFeaturePkgTokenSpaceGuid.PcdSmbiosFeatureEnable                  |TRUE
+  gUsb3DebugFeaturePkgTokenSpaceGuid.PcdUsb3DebugFeatureEnable            |FALSE
+  gUserAuthFeaturePkgTokenSpaceGuid.PcdUserAuthenticationFeatureEnable    |TRUE
+  gLogoFeaturePkgTokenSpaceGuid.PcdLogoFeatureEnable                      |FALSE
+  gLogoFeaturePkgTokenSpaceGuid.PcdJpgEnable                              |FALSE
+!endif
 
   ######################################
   # Silicon Configuration
@@ -151,7 +165,7 @@
   gSiPkgTokenSpaceGuid.PcdPpmEnable|TRUE
   gSiPkgTokenSpaceGuid.PcdS3Enable|TRUE
   gSiPkgTokenSpaceGuid.PcdSerialGpioEnable|TRUE
-  gSiPkgTokenSpaceGuid.PcdSiCatalogDebugEnable|FALSE
+  gSiPkgTokenSpaceGuid.PcdSiCatalogDebugEnable|$(RELEASE_LOGGING)
   gSiPkgTokenSpaceGuid.PcdSiCsmEnable|FALSE
   gSiPkgTokenSpaceGuid.PcdSmbiosEnable|TRUE
   gSiPkgTokenSpaceGuid.PcdSmmVariableEnable|TRUE
@@ -202,7 +216,7 @@
   ######################################
   # Board Configuration
   ######################################
-  gKabylakeOpenBoardPkgTokenSpaceGuid.PcdMultiBoardSupport|TRUE
+  gKabylakeOpenBoardPkgTokenSpaceGuid.PcdMultiBoardSupport|FALSE
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdTbtEnable|FALSE
 
 [PcdsFixedAtBuild.common]
@@ -213,7 +227,15 @@
   gEfiMdePkgTokenSpaceGuid.PcdDebugPropertyMask|0x0
   gEfiMdePkgTokenSpaceGuid.PcdReportStatusCodePropertyMask|0x3
 !else
-  gEfiMdePkgTokenSpaceGuid.PcdDebugPropertyMask|0x2F
+  # FIXME: More than just compiler optimisation is hooked to DEBUG builds.
+  #        Make asserts non-fatal for my early debugging
+  gEfiMdePkgTokenSpaceGuid.PcdDebugPropertyMask|0x0F
+  gEfiMdePkgTokenSpaceGuid.PcdReportStatusCodePropertyMask|0x07
+!endif
+  # Overrides: Cater to limited debugging system
+!if $(RELEASE_LOGGING) == TRUE
+  # TODO: DEBUG_CODE macros are not production-ready
+  gEfiMdePkgTokenSpaceGuid.PcdDebugPropertyMask|0x07
   gEfiMdePkgTokenSpaceGuid.PcdReportStatusCodePropertyMask|0x07
 !endif
   gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress|0xE0000000
@@ -239,7 +261,7 @@
 !if $(TARGET) == DEBUG
   gEfiMdeModulePkgTokenSpaceGuid.PcdSerialUseHardwareFlowControl|FALSE
 !endif
-  gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseMemory|FALSE
+  gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseMemory|$(USE_MEMORY_LOGGING)
 !if $(TARGET) == RELEASE
   gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseSerial|FALSE
 !else
@@ -421,6 +443,8 @@
   ######################################
   # Board Configuration
   ######################################
+  gKabylakeOpenBoardPkgTokenSpaceGuid.PcdLowPowerS0Idle|1
+  gKabylakeOpenBoardPkgTokenSpaceGuid.PcdPciExpNative|1
 
   # Thunderbolt Configuration
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdDTbtAcDcSwitch|0x0

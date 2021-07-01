@@ -23,7 +23,7 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 GLOBAL_REMOVE_IF_UNREFERENCED EFI_GLOBAL_NVS_AREA_PROTOCOL              mGlobalNvsArea;
 
 VOID
-KabylakeRvp3UpdateGlobalNvs (
+AspireVn7Dash572GUpdateGlobalNvs (
   VOID
   )
 {
@@ -54,7 +54,7 @@ KabylakeRvp3UpdateGlobalNvs (
   //
   mGlobalNvsArea.Area->LowPowerS0Idle = PcdGet8 (PcdLowPowerS0Idle);
 
-  mGlobalNvsArea.Area->Ps2MouseEnable     = FALSE;
+  mGlobalNvsArea.Area->Ps2MouseEnable     = PcdGet8 (PcdPs2KbMsEnable);
   mGlobalNvsArea.Area->Ps2KbMsEnable      = PcdGet8 (PcdPs2KbMsEnable);
 
   mGlobalNvsArea.Area->BoardId = (UINT8) LibPcdGetSku ();
@@ -62,13 +62,13 @@ KabylakeRvp3UpdateGlobalNvs (
 
 EFI_STATUS
 EFIAPI
-KabylakeRvp3BoardUpdateAcpiTable (
+AspireVn7Dash572GBoardUpdateAcpiTable (
   IN OUT EFI_ACPI_COMMON_HEADER       *Table,
   IN OUT EFI_ACPI_TABLE_VERSION       *Version
   )
 {
   if (Table->Signature == EFI_ACPI_2_0_DIFFERENTIATED_SYSTEM_DESCRIPTION_TABLE_SIGNATURE) {
-    KabylakeRvp3UpdateGlobalNvs ();
+    AspireVn7Dash572GUpdateGlobalNvs ();
   }
 
   return EFI_SUCCESS;

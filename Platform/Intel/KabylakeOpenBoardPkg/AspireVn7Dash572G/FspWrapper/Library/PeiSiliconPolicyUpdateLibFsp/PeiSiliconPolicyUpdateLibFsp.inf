@@ -41,6 +41,7 @@
   PeiSaPolicyUpdate.c
   PeiFspMiscUpdUpdateLib.c
   PcieDeviceTable.c
+  PeiBoardPolicyUpdate.c
 
 ################################################################################
 #
@@ -90,8 +91,11 @@
   PeiLib
 
 [Pcd]
+  gSiPkgTokenSpaceGuid.PcdTsegSize                              ## CONSUMES
+  gKabylakeOpenBoardPkgTokenSpaceGuid.PcdSaMiscUserBd           ## CONSUMES
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdMrcRcompResistor       ## CONSUMES
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdMrcRcompTarget         ## CONSUMES
+  gKabylakeOpenBoardPkgTokenSpaceGuid.PcdMrcDqPinsInterleaved   ## CONSUMES
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdMrcDqByteMap           ## CONSUMES
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdMrcDqsMapCpu2Dram      ## CONSUMES
 
@@ -100,6 +104,9 @@
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdMrcSpdAddressTable1    ## CONSUMES
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdMrcSpdAddressTable2    ## CONSUMES
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdMrcSpdAddressTable3    ## CONSUMES
+
+  # CA Vref Configuration
+  gKabylakeOpenBoardPkgTokenSpaceGuid.PcdMrcCaVrefConfig        ## CONSUMES
 
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdMrcSpdData
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdMrcSpdDataSize

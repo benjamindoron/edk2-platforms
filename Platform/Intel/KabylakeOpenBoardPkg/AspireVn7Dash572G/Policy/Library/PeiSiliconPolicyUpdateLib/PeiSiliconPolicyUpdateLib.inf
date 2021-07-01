@@ -40,8 +40,10 @@
 
 [Sources]
   PeiSiliconPolicyUpdateLib.c
+  PeiBoardPolicyUpdate.c
 
 [Guids]
+  gMemoryConfigGuid
   gMemoryConfigNoCrcGuid
   gTianoLogoGuid                                ## CONSUMES
   gGraphicsPeiConfigGuid                        ## CONSUMES
@@ -49,12 +51,26 @@
   gHsioPciePreMemConfigGuid                     ## CONSUMES
   gHsioSataPreMemConfigGuid                     ## CONSUMES
   gSaMiscPeiPreMemConfigGuid                    ## CONSUMES
+  gLockDownConfigGuid
+  gPchGeneralConfigGuid
+  gCpuPowerMgmtBasicConfigGuid
+  gCpuPowerMgmtVrConfigGuid
+  gUsbConfigGuid
+  gSataConfigGuid
+  gPcieRpConfigGuid
+  gPmConfigGuid
+  gSerialIrqConfigGuid
+  gHdAudioConfigGuid
 
 [Pcd]
   gSiPkgTokenSpaceGuid.PcdPeiMinMemorySize
+#  gSiPkgTokenSpaceGuid.PcdTsegSize
   gSiPkgTokenSpaceGuid.PcdFlashMicrocodeFvBase
   gSiPkgTokenSpaceGuid.PcdFlashMicrocodeFvSize
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdGraphicsVbtGuid
+  gKabylakeOpenBoardPkgTokenSpaceGuid.PcdSaMiscUserBd           ## CONSUMES
+  gKabylakeOpenBoardPkgTokenSpaceGuid.PcdMrcCaVrefConfig        ## CONSUMES
+  gKabylakeOpenBoardPkgTokenSpaceGuid.PcdMrcDqPinsInterleaved   ## CONSUMES
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdMrcRcompResistor       ## CONSUMES
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdMrcRcompTarget         ## CONSUMES
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdMrcDqByteMap           ## CONSUMES

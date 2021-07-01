@@ -1,0 +1,18 @@
+## @file
+#  Component description file for the Acer Aspire VN7-572G board ACPI tables
+#
+# Copyright (c) 2017, Intel Corporation. All rights reserved.<BR>
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+INF_VERSION          = 0x00010005
+BASE_NAME            = BoardAcpiTables
+FILE_GUID            = 542D134E-7F3B-416A-BA91-48153FB2F792
+MODULE_TYPE          = USER_DEFINED
+VERSION_STRING       = 1.0
+
+[Sources]
+  BoardSsdt.asl

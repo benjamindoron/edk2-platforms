@@ -1,5 +1,5 @@
 ## @file
-# Component information file for KabylakeRvp3InitLib in PEI post memory phase.
+# Component information file for AspireVn7Dash572GInitLib in PEI post memory phase.
 #
 # Copyright (c) 2017 - 2020 Intel Corporation. All rights reserved.<BR>
 #
@@ -23,6 +23,7 @@
   GpioExpanderLib
   PcdLib
   SiliconInitLib
+  BoardEcLib
 
 [Packages]
   MinPlatformPkg/MinPlatformPkg.dec
@@ -33,9 +34,9 @@
   IntelSiliconPkg/IntelSiliconPkg.dec
 
 [Sources]
-  PeiKabylakeRvp3InitPostMemLib.c
-  KabylakeRvp3GpioTable.c
-  KabylakeRvp3HdaVerbTables.c
+  PeiAspireVn7Dash572GInitPostMemLib.c
+  AspireVn7Dash572GGpioTable.c
+  AspireVn7Dash572GHdaVerbTables.c
   PeiBoardInitPostMemLib.c
 
 [FixedPcd]
@@ -43,12 +44,6 @@
 [Pcd]
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdBoardGpioTable
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdBoardGpioTableSize
-  gKabylakeOpenBoardPkgTokenSpaceGuid.PcdBoardGpioTableTouchPanel
-
-  gKabylakeOpenBoardPkgTokenSpaceGuid.PcdGpioExpanderTable
-  gKabylakeOpenBoardPkgTokenSpaceGuid.PcdGpioExpanderTableSize
 
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdHdaVerbTable
-
-  gKabylakeOpenBoardPkgTokenSpaceGuid.PcdBoardUcmcGpioTable
-  gKabylakeOpenBoardPkgTokenSpaceGuid.PcdBoardUcmcGpioTableSize
+  gKabylakeOpenBoardPkgTokenSpaceGuid.PcdDisplayAudioHdaVerbTable

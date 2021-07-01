@@ -6,8 +6,9 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
 
-#include "DxeGopPolicyInit.h"
+#include <Library/EcLib.h>
 #include <Protocol/GopPolicy.h>
+#include "DxeGopPolicyInit.h"
 
 GLOBAL_REMOVE_IF_UNREFERENCED GOP_POLICY_PROTOCOL        mGOPPolicy;
 GLOBAL_REMOVE_IF_UNREFERENCED UINT32                     mVbtSize = 0;
@@ -30,6 +31,17 @@ GetPlatformLidStatus (
   OUT LID_STATUS *CurrentLidStatus
   )
 {
+  EFI_STATUS  Status;
+  UINT8       PowerRegister;
+
+  Status = EcRead(0x70, &PowerRegister);
+  if (EFI_ERROR(Status)) {
+    return EFI_UNSUPPORTED;
+  }
+
+  // "ELID"
+  *CurrentLidStatus = (PowerRegister & BIT1) ? LidOpen : LidClosed;
+  
   return EFI_UNSUPPORTED;
 }
 /**
@@ -45,7 +57,10 @@ GetPlatformDockStatus (
   OUT DOCK_STATUS  CurrentDockStatus
   )
 {
-    return EFI_UNSUPPORTED;
+  // This board has no dock
+  CurrentDockStatus = UnDocked;
+
+  return EFI_SUCCESS;
 }
 
 

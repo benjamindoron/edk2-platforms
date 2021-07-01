@@ -1,5 +1,5 @@
 /** @file
-  Kaby Lake RVP 3 Board ACPI library
+  Aspire VN7-572G Board ACPI library
 
 Copyright (c) 2017 - 2019, Intel Corporation. All rights reserved.<BR>
 SPDX-License-Identifier: BSD-2-Clause-Patent
@@ -17,7 +17,7 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 
 EFI_STATUS
 EFIAPI
-KabylakeRvp3BoardUpdateAcpiTable (
+AspireVn7Dash572GBoardUpdateAcpiTable (
   IN OUT EFI_ACPI_COMMON_HEADER       *Table,
   IN OUT EFI_ACPI_TABLE_VERSION       *Version
   );
@@ -29,7 +29,7 @@ BoardUpdateAcpiTable (
   IN OUT EFI_ACPI_TABLE_VERSION       *Version
   )
 {
-  KabylakeRvp3BoardUpdateAcpiTable (Table, Version);
+  AspireVn7Dash572GBoardUpdateAcpiTable (Table, Version);
 
   return EFI_SUCCESS;
 }

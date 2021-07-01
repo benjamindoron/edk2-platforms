@@ -23,7 +23,7 @@
 # existing system flash.
 #
 ################################################################################
-[FD.KabylakeRvp3]
+[FD.AspireVn7Dash572G]
 #
 # FD Tokens, BaseAddress, Size, ErasePolarity, BlockSize, and NumBlocks, cannot be
 # assigned with PCD values. Instead, it uses the definitions for its variety, which
@@ -130,6 +130,10 @@ DATA = {
 gMinPlatformPkgTokenSpaceGuid.PcdFlashNvStorageFtwSpareOffset|gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwSpareSize
 gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwSpareBase|gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwSpareSize
 #NV_FTW_SPARE
+
+gKabylakeOpenBoardPkgTokenSpaceGuid.PcdFlashNvDebugMessageOffset|gKabylakeOpenBoardPkgTokenSpaceGuid.PcdFlashNvDebugMessageSize
+gKabylakeOpenBoardPkgTokenSpaceGuid.PcdFlashNvDebugMessageBase|gKabylakeOpenBoardPkgTokenSpaceGuid.PcdFlashNvDebugMessageSize
+#DEBUG_MESSAGE_AREA
 
 gMinPlatformPkgTokenSpaceGuid.PcdFlashFvAdvancedOffset|gMinPlatformPkgTokenSpaceGuid.PcdFlashFvAdvancedSize
 gMinPlatformPkgTokenSpaceGuid.PcdFlashFvAdvancedBase|gMinPlatformPkgTokenSpaceGuid.PcdFlashFvAdvancedSize
@@ -276,7 +280,7 @@ INF $(PLATFORM_PACKAGE)/PlatformInit/SiliconPolicyPei/SiliconPolicyPeiPostMem.in
 
 !if gSiPkgTokenSpaceGuid.PcdPeiDisplayEnable == TRUE
 FILE FREEFORM = 4ad46122-ffeb-4a52-bfb0-518cfca02db0 {
-  SECTION RAW = $(PLATFORM_FSP_BIN_PACKAGE)/SampleCode/Vbt/Vbt.bin
+  SECTION RAW = AspireVn7Dash572G/Vbt.bin
   SECTION UI  = "Vbt"
 }
 FILE FREEFORM = 7BB28B99-61BB-11D5-9A5D-0090273FC14D {
@@ -414,6 +418,7 @@ INF  $(PLATFORM_PACKAGE)/Acpi/AcpiTables/AcpiPlatform.inf
 INF  $(PLATFORM_PACKAGE)/Acpi/AcpiSmm/AcpiSmm.inf
 
 INF  RuleOverride = DRIVER_ACPITABLE $(PLATFORM_BOARD_PACKAGE)/Acpi/BoardAcpiDxe/BoardAcpiDxe.inf
+INF  RuleOverride = ACPITABLE $(PROJECT)/Acpi/BoardAcpiTables.inf
 
 INF  $(PLATFORM_PACKAGE)/FspWrapper/SaveMemoryConfig/SaveMemoryConfig.inf
 

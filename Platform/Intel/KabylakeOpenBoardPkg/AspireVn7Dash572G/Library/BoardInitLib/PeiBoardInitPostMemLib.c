@@ -1,5 +1,5 @@
 /** @file
-  Kaby Lake RVP 3 Board Initialization Post-Memory library
+  Aspire VN7-572G Board Initialization Post-Memory library
 
 Copyright (c) 2017 - 2019, Intel Corporation. All rights reserved.<BR>
 SPDX-License-Identifier: BSD-2-Clause-Patent
@@ -15,7 +15,7 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 
 EFI_STATUS
 EFIAPI
-KabylakeRvp3BoardInitBeforeSiliconInit (
+AspireVn7Dash572GBoardInitBeforeSiliconInit (
   VOID
   );
 
@@ -25,7 +25,7 @@ BoardInitBeforeSiliconInit (
   VOID
   )
 {
-  KabylakeRvp3BoardInitBeforeSiliconInit ();
+  AspireVn7Dash572GBoardInitBeforeSiliconInit ();
   return EFI_SUCCESS;
 }
 

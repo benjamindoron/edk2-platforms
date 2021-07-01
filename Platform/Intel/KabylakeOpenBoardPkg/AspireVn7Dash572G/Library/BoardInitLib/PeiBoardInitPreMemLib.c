@@ -13,28 +13,36 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #include <Library/PcdLib.h>
 #include <Library/DebugLib.h>
 #include <PlatformBoardId.h>
+//rm
+#include <Library/CacheAsRamLib.h>
+#include <Library/MtrrLib.h>
+#include <Library/MemoryAllocationLib.h>
+#include <Register/Cpuid.h>
+#include <Register/Msr.h>
+#include <Library/FspPlatformLib.h>
+#include <Library/BaseMemoryLib.h>
 
 EFI_STATUS
 EFIAPI
-KabylakeRvp3BoardDetect (
+AspireVn7Dash572GBoardDetect (
   VOID
   );
 
 EFI_BOOT_MODE
 EFIAPI
-KabylakeRvp3BoardBootModeDetect (
+AspireVn7Dash572GBoardBootModeDetect (
   VOID
   );
 
 EFI_STATUS
 EFIAPI
-KabylakeRvp3BoardDebugInit (
+AspireVn7Dash572GBoardDebugInit (
   VOID
   );
 
 EFI_STATUS
 EFIAPI
-KabylakeRvp3BoardInitBeforeMemoryInit (
+AspireVn7Dash572GBoardInitBeforeMemoryInit (
   VOID
   );
 
@@ -44,7 +52,7 @@ BoardDetect (
   VOID
   )
 {
-  KabylakeRvp3BoardDetect ();
+  AspireVn7Dash572GBoardDetect ();
   return EFI_SUCCESS;
 }
 
@@ -54,7 +62,7 @@ BoardDebugInit (
   VOID
   )
 {
-  KabylakeRvp3BoardDebugInit ();
+  AspireVn7Dash572GBoardDebugInit ();
   return EFI_SUCCESS;
 }
 
@@ -64,7 +72,7 @@ BoardBootModeDetect (
   VOID
   )
 {
-  return KabylakeRvp3BoardBootModeDetect ();
+  return AspireVn7Dash572GBoardBootModeDetect ();
 }
 
 EFI_STATUS
@@ -73,9 +81,7 @@ BoardInitBeforeMemoryInit (
   VOID
   )
 {
-  if ((LibPcdGetSku () == BoardIdKabyLakeYLpddr3Rvp3) || (LibPcdGetSku () == BoardIdSkylakeRvp3)) {
-    KabylakeRvp3BoardInitBeforeMemoryInit ();
-  }
+  AspireVn7Dash572GBoardInitBeforeMemoryInit ();
   return EFI_SUCCESS;
 }
 
@@ -85,6 +91,9 @@ BoardInitAfterMemoryInit (
   VOID
   )
 {
+  // TODO: Set-up LGMR
+  DEBUG((DEBUG_INFO, "after memory init\n"));
+
   return EFI_SUCCESS;
 }
 
@@ -94,6 +103,8 @@ BoardInitBeforeTempRamExit (
   VOID
   )
 {
+  DEBUG((DEBUG_INFO, "before CAR teardown\n"));
+
   return EFI_SUCCESS;
 }
 
@@ -103,6 +114,8 @@ BoardInitAfterTempRamExit (
   VOID
   )
 {
+  /* REDACTED? */
+
   return EFI_SUCCESS;
 }
 

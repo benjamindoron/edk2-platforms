@@ -91,6 +91,36 @@ PeiFspSaPolicyUpdate (
   IN OUT FSPS_UPD    *FspsUpd
   );
 
+/**
+  Performs the remainder of board-specific FSP Policy initialization.
+
+  @param[in][out]  FspmUpd             Pointer to FSP UPD Data.
+
+  @retval          EFI_SUCCESS         FSP UPD Data is updated.
+  @retval          EFI_NOT_FOUND       Fail to locate required PPI.
+  @retval          Other               FSP UPD Data update process fail.
+**/
+EFI_STATUS
+EFIAPI
+PeiFspBoardPolicyUpdatePreMem (
+  IN OUT FSPM_UPD    *FspmUpd
+  );
+
+/**
+  Performs the remainder of board-specific FSP Policy initialization.
+
+  @param[in][out]  FspsUpd             Pointer to FSP UPD Data.
+
+  @retval          EFI_SUCCESS         FSP UPD Data is updated.
+  @retval          EFI_NOT_FOUND       Fail to locate required PPI.
+  @retval          Other               FSP UPD Data update process fail.
+**/
+EFI_STATUS
+EFIAPI
+PeiFspBoardPolicyUpdate (
+  IN OUT FSPS_UPD    *FspsUpd
+  );
+
 VOID
 InternalPrintVariableData (
   IN UINT8   *Data8,
@@ -139,6 +169,7 @@ SiliconPolicyUpdatePreMem (
   FspmUpdDataPtr = FspmUpd;
   PeiFspSaPolicyUpdatePreMem (FspmUpdDataPtr);
   PeiFspPchPolicyUpdatePreMem (FspmUpdDataPtr);
+  PeiFspBoardPolicyUpdatePreMem (FspmUpdDataPtr);
   PeiFspMiscUpdUpdatePreMem (FspmUpdDataPtr);
 
   InternalPrintVariableData ((VOID *)FspmUpdDataPtr, sizeof(FSPM_UPD));
@@ -177,6 +208,7 @@ SiliconPolicyUpdatePostMem (
   FspsUpdDataPtr = FspsUpd;
   PeiFspSaPolicyUpdate (FspsUpdDataPtr);
   PeiFspPchPolicyUpdate (FspsUpdDataPtr);
+  PeiFspBoardPolicyUpdate (FspsUpdDataPtr);
   
   InternalPrintVariableData ((VOID *)FspsUpdDataPtr, sizeof(FSPS_UPD));
 

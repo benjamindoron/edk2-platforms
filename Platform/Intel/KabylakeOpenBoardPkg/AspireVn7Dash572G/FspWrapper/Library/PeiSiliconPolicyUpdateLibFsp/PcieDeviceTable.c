@@ -106,6 +106,9 @@ GLOBAL_REMOVE_IF_UNREFERENCED PCH_PCIE_DEVICE_OVERRIDE mPcieDeviceTable[] = {
   // Intel Wilkins Peak PF Wifi
   //
   { 0x8086, 0x08B0, 0xff, PCI_CLASS_NETWORK, PCI_CLASS_NETWORK_OTHER, PchPcieAspmL1, PchPcieL1L2Override, 0, 0, 0, 0, 0, 0, 0 },
+  // TODO: Prefer settings for Qualcomm Atheros QCA6174 here. Use PCH PCIe RP settings as fallback
+  { 0x168c, 0x003e, 0xff, PCI_CLASS_NETWORK, PCI_CLASS_NETWORK_OTHER, PchPcieAspmL1, PchPcieL1L2AndL1SubstatesOverride, 0, 0, 0, 0, 0, 0, 0 },  // Remove ASPM L0s
+  
 
   //
   // End of Table
