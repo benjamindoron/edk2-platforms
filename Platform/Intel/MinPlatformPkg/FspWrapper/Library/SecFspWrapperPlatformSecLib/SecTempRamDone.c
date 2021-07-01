@@ -34,6 +34,7 @@ SecPlatformDisableTemporaryMemory (
   CONST EFI_PEI_SERVICES            **PeiServices;
   FSP_TEMP_RAM_EXIT_PPI             *TempRamExitPpi;
   PLATFORM_INIT_TEMP_RAM_EXIT_PPI   *PlatformInitTempRamExitPpi;
+  BOOLEAN                           InterruptState;
 
   DEBUG ((DEBUG_INFO, "SecPlatformDisableTemporaryMemory enter\n"));
   PeiServices = GetPeiServicesTablePointer ();
@@ -59,7 +60,7 @@ SecPlatformDisableTemporaryMemory (
 
   Status = PlatformInitTempRamExitPpi->PlatformInitBeforeTempRamExit ();
   ASSERT_EFI_ERROR (Status);
-
+#if 0
   if (PcdGet8 (PcdFspModeSelection) == 1) {
     //
     // FSP API mode
@@ -85,8 +86,12 @@ SecPlatformDisableTemporaryMemory (
     }
     TempRamExitPpi->TempRamExit (NULL);
   }
-
+#endif
+  // This makes sense
+  InterruptState = SaveAndDisableInterrupts ();
+  // FIXME: This call has been appropriated to perform CAR teardown. DNM
   Status = PlatformInitTempRamExitPpi->PlatformInitAfterTempRamExit ();
+  SetInterruptState (InterruptState);
   ASSERT_EFI_ERROR (Status);
 
   return ;

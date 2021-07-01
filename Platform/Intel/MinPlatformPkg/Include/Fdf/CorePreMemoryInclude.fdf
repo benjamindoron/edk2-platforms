@@ -7,6 +7,8 @@
 #
 ##
 
+# TODO: ReportStatusCode as in-memory debug logging may require APRIORI
+
 #INF  UefiCpuPkg/SecCore/SecCore.inf
 #INF  MdeModulePkg/Core/Pei/PeiMain.inf
 
