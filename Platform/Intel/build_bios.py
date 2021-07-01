@@ -816,6 +816,15 @@ def clean(build_config, board=False):
         os.remove(os.path.join(config['WORKSPACE'],
                                config.get("BUILD_REPORT", "BuildReport.log")))
 
+    if os.path.isfile(os.path.join(config['WORKSPACE'],
+                                   config.get("BUILD_LOG",
+                                              "Build.log"))):
+        print("Removing ", os.path.join(config['WORKSPACE'],
+                                        config.get("BUILD_LOG",
+                                                   "Build.log")))
+        os.remove(os.path.join(config['WORKSPACE'],
+                               config.get("BUILD_LOG", "Build.log")))
+
     print("  All done...")
 
     sys.exit(0)
