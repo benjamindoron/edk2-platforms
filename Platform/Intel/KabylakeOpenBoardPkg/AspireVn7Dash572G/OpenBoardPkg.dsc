@@ -546,7 +546,7 @@
      ShellCEntryLib|ShellPkg/Library/UefiShellCEntryLib/UefiShellCEntryLib.inf
      ShellLib|ShellPkg/Library/UefiShellLib/UefiShellLib.inf
   }
-#  $(PLATFORM_BOARD_PACKAGE)/Application/ShellDumpLogApp/ShellDumpLogApp.inf
+  $(PLATFORM_BOARD_PACKAGE)/Application/ShellDumpLogApp/ShellDumpLogApp.inf
 
 !if gMinPlatformPkgTokenSpaceGuid.PcdBootToShellOnly == FALSE
   UefiCpuPkg/PiSmmCpuDxeSmm/PiSmmCpuDxeSmm.inf {
