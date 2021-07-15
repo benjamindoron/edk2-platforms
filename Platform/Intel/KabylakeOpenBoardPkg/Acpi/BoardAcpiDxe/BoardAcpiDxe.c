@@ -289,6 +289,8 @@ InstallAcpiBoard (
   // Platform ACPI Tables
   //
   PublishAcpiTablesFromFv (&gEfiCallerIdGuid);
+  DEBUG((DEBUG_INFO, "PcdAcpiTableStorageFile GUID: %g\n", PcdGetPtr (PcdAcpiTableStorageFile)));
+  PublishAcpiTablesFromFv (PcdGetPtr (PcdAcpiTableStorageFile));
 
   //
   // This protocol publish must be done after PublishAcpiTablesFromFv.
