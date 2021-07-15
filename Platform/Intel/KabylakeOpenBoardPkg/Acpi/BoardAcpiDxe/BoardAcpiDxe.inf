@@ -67,6 +67,8 @@
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdDisablePassiveTripPoints
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdDisableCriticalTripPoints
 
+  gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiTableStorageFile
+
 [Depex]
   gEfiAcpiTableProtocolGuid           AND
   gEfiFirmwareVolume2ProtocolGuid     AND
