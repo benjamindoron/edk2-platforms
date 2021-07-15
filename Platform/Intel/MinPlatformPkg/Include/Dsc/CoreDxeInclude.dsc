@@ -93,11 +93,17 @@
   MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
   MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
   MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
+  MdeModulePkg/Bus/Usb/UsbMouseDxe/UsbMouseDxe.inf
 
   MdeModulePkg/Universal/Disk/DiskIoDxe/DiskIoDxe.inf
   MdeModulePkg/Universal/Disk/PartitionDxe/PartitionDxe.inf
   MdeModulePkg/Universal/Disk/UnicodeCollation/EnglishDxe/EnglishDxe.inf
   FatPkg/EnhancedFatDxe/Fat.inf
+  edk2-platforms/Features/Ext4Pkg/Ext4Dxe/Ext4Dxe.inf {
+    <LibraryClasses>
+      BaseUcs2Utf8Lib|RedfishPkg/Library/BaseUcs2Utf8Lib/BaseUcs2Utf8Lib.inf
+  }
+  MdeModulePkg/Universal/Disk/RamDiskDxe/RamDiskDxe.inf
 
   #MdeModulePkg/Universal/Console/GraphicsOutputDxe/GraphicsOutputDxe.inf
   MdeModulePkg/Universal/Console/GraphicsConsoleDxe/GraphicsConsoleDxe.inf
@@ -113,6 +119,9 @@
   MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
 
   MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf
+
+  MdeModulePkg/Universal/PlatformDriOverrideDxe/PlatformDriOverrideDxe.inf
+  MdeModulePkg/Universal/EbcDxe/EbcDxe.inf
 
   MdeModulePkg/Application/UiApp/UiApp.inf {
     <LibraryClasses>
@@ -142,8 +151,12 @@
   MdeModulePkg/Universal/Acpi/FirmwarePerformanceDataTableSmm/FirmwarePerformanceSmm.inf
   MdeModulePkg/Universal/Acpi/BootGraphicsResourceTableDxe/BootGraphicsResourceTableDxe.inf
 
+  MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf
+
 !if gMinPlatformPkgTokenSpaceGuid.PcdUefiSecureBootEnable == TRUE
   SecurityPkg/VariableAuthenticated/SecureBootConfigDxe/SecureBootConfigDxe.inf
+  SecurityPkg/VariableAuthenticated/SecureBootDefaultKeysDxe/SecureBootDefaultKeysDxe.inf
+  SecurityPkg/EnrollFromDefaultKeysApp/EnrollFromDefaultKeysApp.inf
 !endif
 
 !if gMinPlatformPkgTokenSpaceGuid.PcdTpm2Enable == TRUE
@@ -157,6 +170,10 @@
   SecurityPkg/Tcg/Tcg2Smm/Tcg2Smm.inf
   SecurityPkg/Tcg/Tcg2Acpi/Tcg2Acpi.inf
   SecurityPkg/Tcg/Tcg2Config/Tcg2ConfigDxe.inf
+!endif
+
+!if gMinPlatformPkgTokenSpaceGuid.PcdBootStage >= 5
+  SecurityPkg/RandomNumberGenerator/RngDxe/RngDxe.inf
 !endif
 
 !if gMinPlatformPkgTokenSpaceGuid.PcdPerformanceEnable == TRUE

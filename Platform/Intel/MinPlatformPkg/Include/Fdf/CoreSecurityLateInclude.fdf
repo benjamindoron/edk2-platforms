@@ -9,6 +9,7 @@
 
 !if gMinPlatformPkgTokenSpaceGuid.PcdUefiSecureBootEnable == TRUE
 INF  SecurityPkg/VariableAuthenticated/SecureBootConfigDxe/SecureBootConfigDxe.inf
+INF  SecurityPkg/VariableAuthenticated/SecureBootDefaultKeysDxe/SecureBootDefaultKeysDxe.inf
 !endif
 
 !if gMinPlatformPkgTokenSpaceGuid.PcdTpm2Enable == TRUE
@@ -17,4 +18,8 @@ INF  SecurityPkg/Tcg/Tcg2Dxe/Tcg2Dxe.inf
 INF  SecurityPkg/Tcg/Tcg2Smm/Tcg2Smm.inf
 INF  RuleOverride = DRIVER_ACPITABLE SecurityPkg/Tcg/Tcg2Acpi/Tcg2Acpi.inf
 INF  SecurityPkg/Tcg/Tcg2Config/Tcg2ConfigDxe.inf
+!endif
+
+!if gMinPlatformPkgTokenSpaceGuid.PcdBootStage >= 5
+INF  SecurityPkg/RandomNumberGenerator/RngDxe/RngDxe.inf
 !endif
