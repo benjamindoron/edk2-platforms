@@ -416,6 +416,11 @@ def build(config):
         command.append("-D")
         command.append("MAX_SOCKET=" + config["MAX_SOCKET"])
 
+    if config.get("PERFORMANCE_BUILD", "FALSE") == "TRUE":
+        #Override PCD to enable performance library.
+        command.append("--pcd")
+        command.append("gMinPlatformPkgTokenSpaceGuid.PcdPerformanceEnable=TRUE")
+
     if config.get("API_MODE_FSP_WRAPPER_BUILD", "FALSE") == "TRUE":
         #Override PCD to enable API mode FSP wrapper.
         command.append("--pcd")
