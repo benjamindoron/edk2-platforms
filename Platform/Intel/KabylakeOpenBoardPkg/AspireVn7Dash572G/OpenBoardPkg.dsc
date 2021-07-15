@@ -228,10 +228,12 @@
 
 [LibraryClasses.common.PEI_CORE]
   #######################################
-  # Edk2 Packages
+  # Platform Package
   #######################################
+# Requires local patch: InitializeMemoryServices() before ProcessLibraryConstructorList()
 !if $(USE_PEI_SPI_LOGGING) == TRUE
-  DebugLib|MdeModulePkg/Library/PeiDxeDebugLibReportStatusCode/PeiDxeDebugLibReportStatusCode.inf
+  DebugLib|MdePkg/Library/BaseDebugLibSerialPort/BaseDebugLibSerialPort.inf
+  SerialPortLib|$(PLATFORM_BOARD_PACKAGE)/Library/PeiSerialPortLibSpiFlash/PeiSerialPortLibSpiFlash.inf
 !endif
 
 [LibraryClasses.common.PEIM]
@@ -488,6 +490,12 @@
 # @todo: Change below line to [Components.$(DXE_ARCH)] after https://bugzilla.tianocore.org/show_bug.cgi?id=2308
 #        is completed
 [Components.X64]
+# Compiled .efi but not in FV (PcdBootStage == 4, with performance build):
+# - dpDynamicCommand, ShellDumpLogApp, TestPointDumpApp
+# Other apps; perhaps useful:
+# - MdeModulePkg/{DumpDynPcd,*ProfileInfo,VariableInfo}, UefiCpuPkg/Cpuid
+# - Also, ShellPkg/*DynamicCommand
+
   #######################################
   # Edk2 Packages
   #######################################
@@ -505,6 +513,7 @@
   MdeModulePkg/Bus/Pci/SataControllerDxe/SataControllerDxe.inf
   MdeModulePkg/Universal/Console/GraphicsOutputDxe/GraphicsOutputDxe.inf
   MdeModulePkg/Bus/Isa/Ps2KeyboardDxe/Ps2KeyboardDxe.inf
+  MdeModulePkg/Bus/Isa/Ps2MouseDxe/Ps2MouseDxe.inf
   MdeModulePkg/Universal/BdsDxe/BdsDxe.inf{
     <LibraryClasses>
       NULL|BoardModulePkg/Library/BdsPs2KbcLib/BdsPs2KbcLib.inf
@@ -522,20 +531,22 @@
    <PcdsFixedAtBuild>
      gEfiShellPkgTokenSpaceGuid.PcdShellLibAutoInitialize|FALSE
    <LibraryClasses>
-     NULL|ShellPkg/Library/UefiShellLevel2CommandsLib/UefiShellLevel2CommandsLib.inf
      NULL|ShellPkg/Library/UefiShellLevel1CommandsLib/UefiShellLevel1CommandsLib.inf
+     NULL|ShellPkg/Library/UefiShellLevel2CommandsLib/UefiShellLevel2CommandsLib.inf
      NULL|ShellPkg/Library/UefiShellLevel3CommandsLib/UefiShellLevel3CommandsLib.inf
      NULL|ShellPkg/Library/UefiShellDriver1CommandsLib/UefiShellDriver1CommandsLib.inf
      NULL|ShellPkg/Library/UefiShellInstall1CommandsLib/UefiShellInstall1CommandsLib.inf
      NULL|ShellPkg/Library/UefiShellDebug1CommandsLib/UefiShellDebug1CommandsLib.inf
      NULL|ShellPkg/Library/UefiShellNetwork1CommandsLib/UefiShellNetwork1CommandsLib.inf
      NULL|ShellPkg/Library/UefiShellNetwork2CommandsLib/UefiShellNetwork2CommandsLib.inf
+     NULL|ShellPkg/Library/UefiShellAcpiViewCommandLib/UefiShellAcpiViewCommandLib.inf
      ShellCommandLib|ShellPkg/Library/UefiShellCommandLib/UefiShellCommandLib.inf
      HandleParsingLib|ShellPkg/Library/UefiHandleParsingLib/UefiHandleParsingLib.inf
      BcfgCommandLib|ShellPkg/Library/UefiShellBcfgCommandLib/UefiShellBcfgCommandLib.inf
      ShellCEntryLib|ShellPkg/Library/UefiShellCEntryLib/UefiShellCEntryLib.inf
      ShellLib|ShellPkg/Library/UefiShellLib/UefiShellLib.inf
   }
+#  $(PLATFORM_BOARD_PACKAGE)/Application/ShellDumpLogApp/ShellDumpLogApp.inf
 
 !if gMinPlatformPkgTokenSpaceGuid.PcdBootToShellOnly == FALSE
   UefiCpuPkg/PiSmmCpuDxeSmm/PiSmmCpuDxeSmm.inf {

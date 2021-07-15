@@ -103,6 +103,7 @@ InternalAddPlatformVerbTables (
       InternalAddVerbTable (&VerbTableEntryNum, VerbTableArray, (VOID *) (UINTN) PcdGet32 (PcdHdaVerbTable));
       InternalAddVerbTable (&VerbTableEntryNum, VerbTableArray, (VOID *) (UINTN) PcdGet32 (PcdHdaVerbTable2));
       InternalAddVerbTable (&VerbTableEntryNum, VerbTableArray, NULL);
+      DEBUG ((DEBUG_INFO, "HDA: No external codecs to install!\n"));
     }
   } else {
     DEBUG ((DEBUG_INFO, "HDA Policy: External codec kit selected\n"));

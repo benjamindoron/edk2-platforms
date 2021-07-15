@@ -2,6 +2,8 @@
 
 #include "thermal.asl"
 
+// TODO: Need hooks from BoardAcpiDxe
+
 Scope (_SB)
 {
 	Method (MPTS, 1, NotSerialized)  // _PTS: Prepare To Sleep
@@ -55,6 +57,8 @@ Scope (_SB)
 		Name (_PRW, Package () { 0x0A, 3 })  // _PRW: Power Resources for Wake
 	}
 
+	// FIXME: Collides with BoardAcpiDxe, but GPI in _PRW is board-specific.
+	// Perhaps _INI method fills variable inside BoardAcpiDxe?
 	Device (SLPB)
 	{
 		Name (_HID, EisaId ("PNP0C0E") /* Sleep Button Device */)  // _HID: Hardware ID

@@ -1,5 +1,5 @@
 ## @file
-#  PCD configuration build description file for the KabylakeRvp3 board.
+#  PCD configuration build description file for the Aspire VN7-572G board.
 #
 # Copyright (c) 2017 - 2020, Intel Corporation. All rights reserved.<BR>
 #
@@ -70,7 +70,7 @@
 
   gIntelFsp2PkgTokenSpaceGuid.PcdTemporaryRamBase|0xFEF00000
   gIntelFsp2PkgTokenSpaceGuid.PcdTemporaryRamSize|0x00040000
-  gSiPkgTokenSpaceGuid.PcdTemporaryRamBase|0xFEF80000  # Not right, but unused
+  gSiPkgTokenSpaceGuid.PcdTemporaryRamBase|0xFEF00000  # Now corrected, but unused
   gSiPkgTokenSpaceGuid.PcdTemporaryRamSize|0x00040000
   gSiPkgTokenSpaceGuid.PcdTsegSize|0x1000000  # Now hooked up
 
@@ -79,18 +79,18 @@
   # FSP API mode does not share stack with the boot loader,
   # so FSP needs more temporary memory for FSP heap + stack size.
   #
-  gIntelFsp2PkgTokenSpaceGuid.PcdFspTemporaryRamSize|0x26000
+  gIntelFsp2PkgTokenSpaceGuid.PcdFspTemporaryRamSize|0x28000  # Now updated to not deprive FSP of stack
   #
   # FSP API mode does not need to enlarge the boot loader stack size
   # since the stacks are separate.
   #
-  gSiPkgTokenSpaceGuid.PcdPeiTemporaryRamStackSize|0x20000  # Not hooked up, not used (functionally equivalent)
+  gSiPkgTokenSpaceGuid.PcdPeiTemporaryRamStackSize|0x20000  # Not hooked up, not used (functionally equivalent and equal to UefiCpuPkg)
 !else
   #
   # In FSP Dispatch mode boot loader stack size must be large
   # enough for executing both boot loader and FSP.
   #
-  gSiPkgTokenSpaceGuid.PcdPeiTemporaryRamStackSize|0x40000
+  gSiPkgTokenSpaceGuid.PcdPeiTemporaryRamStackSize|0x40000 # Not hooked up, not used (functionally equivalent but NOT equal to UefiCpuPkg)
 !endif
 
 !if (gMinPlatformPkgTokenSpaceGuid.PcdFspWrapperBootMode == FALSE) || (gIntelFsp2WrapperTokenSpaceGuid.PcdFspModeSelection == 1)
@@ -115,14 +115,16 @@
 # TODO: Prune this list to relevant features only
 !if gMinPlatformPkgTokenSpaceGuid.PcdBootStage >= 6
   gAcpiDebugFeaturePkgTokenSpaceGuid.PcdAcpiDebugFeatureEnable            |TRUE
-  gIpmiFeaturePkgTokenSpaceGuid.PcdIpmiFeatureEnable                      |FALSE
+  # No BMC, PcdIpmiFeatureEnable will not be enabled
+  # TODO: Can be build-time (user) choice
   gNetworkFeaturePkgTokenSpaceGuid.PcdNetworkFeatureEnable                |FALSE
   gS3FeaturePkgTokenSpaceGuid.PcdS3FeatureEnable                          |TRUE
   gSmbiosFeaturePkgTokenSpaceGuid.PcdSmbiosFeatureEnable                  |TRUE
+  # Requires actual hook-up
   gUsb3DebugFeaturePkgTokenSpaceGuid.PcdUsb3DebugFeatureEnable            |FALSE
   gUserAuthFeaturePkgTokenSpaceGuid.PcdUserAuthenticationFeatureEnable    |TRUE
-  gLogoFeaturePkgTokenSpaceGuid.PcdLogoFeatureEnable                      |FALSE
-  gLogoFeaturePkgTokenSpaceGuid.PcdJpgEnable                              |FALSE
+  gLogoFeaturePkgTokenSpaceGuid.PcdLogoFeatureEnable                      |TRUE
+  gLogoFeaturePkgTokenSpaceGuid.PcdJpgEnable                              |TRUE
 !endif
 
   ######################################
@@ -166,7 +168,7 @@
   gSiPkgTokenSpaceGuid.PcdS3Enable|TRUE
   gSiPkgTokenSpaceGuid.PcdSerialGpioEnable|TRUE
   gSiPkgTokenSpaceGuid.PcdSiCatalogDebugEnable|$(RELEASE_LOGGING)
-  gSiPkgTokenSpaceGuid.PcdSiCsmEnable|FALSE
+  gSiPkgTokenSpaceGuid.PcdSiCsmEnable|FALSE  # TODO: Create libraries, include modules and hook-up someday
   gSiPkgTokenSpaceGuid.PcdSmbiosEnable|TRUE
   gSiPkgTokenSpaceGuid.PcdSmmVariableEnable|TRUE
   gSiPkgTokenSpaceGuid.PcdSoftwareGuardEnable|TRUE
@@ -179,10 +181,10 @@
   gMinPlatformPkgTokenSpaceGuid.PcdBootToShellOnly|FALSE
   gMinPlatformPkgTokenSpaceGuid.PcdStopAfterDebugInit|FALSE
   gMinPlatformPkgTokenSpaceGuid.PcdStopAfterMemInit|FALSE
-  gMinPlatformPkgTokenSpaceGuid.PcdPerformanceEnable|FALSE
+  gMinPlatformPkgTokenSpaceGuid.PcdPerformanceEnable|FALSE  # FIXME: Define by PERFORMANCE_BUILD?
   gMinPlatformPkgTokenSpaceGuid.PcdTpm2Enable|FALSE
   gMinPlatformPkgTokenSpaceGuid.PcdUefiSecureBootEnable|FALSE
-  gMinPlatformPkgTokenSpaceGuid.PcdSerialTerminalEnable|FALSE
+  gMinPlatformPkgTokenSpaceGuid.PcdSerialTerminalEnable|FALSE  # FIXME: Define in build-system?
 
 !if gMinPlatformPkgTokenSpaceGuid.PcdBootStage >= 1
   gMinPlatformPkgTokenSpaceGuid.PcdStopAfterDebugInit|TRUE
@@ -207,6 +209,7 @@
   gMinPlatformPkgTokenSpaceGuid.PcdTpm2Enable|TRUE
 !endif
 
+# FIXME: Also build with TESTING == TRUE?
 !if $(TARGET) == DEBUG
   gMinPlatformPkgTokenSpaceGuid.PcdSmiHandlerProfileEnable|TRUE
 !else
@@ -375,7 +378,7 @@
   gBoardModulePkgTokenSpaceGuid.PcdPs2KbMsEnable|1
   gBoardModulePkgTokenSpaceGuid.PcdSuperIoPciIsaBridgeDevice|{0x00, 0x00, 0x1F, 0x00}
 
-[PcdsFixedAtBuild.IA32]
+[PcdsFixedAtBuild.IA32]  # TODO?
   ######################################
   # Edk2 Configuration
   ######################################

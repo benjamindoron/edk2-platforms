@@ -10,7 +10,8 @@
 [Defines]
 INF_VERSION          = 0x00010005
 BASE_NAME            = BoardAcpiTables
-FILE_GUID            = 542D134E-7F3B-416A-BA91-48153FB2F792
+# TODO: Cannot collide GUID with BoardAcpiDxe to have it install us
+FILE_GUID            = 7E374E25-8E01-4FEE-87F2-390C23C606CD
 MODULE_TYPE          = USER_DEFINED
 VERSION_STRING       = 1.0
 

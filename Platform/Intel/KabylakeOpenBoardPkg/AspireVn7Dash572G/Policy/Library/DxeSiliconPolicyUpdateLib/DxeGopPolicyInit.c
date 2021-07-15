@@ -42,7 +42,7 @@ GetPlatformLidStatus (
   // "ELID"
   *CurrentLidStatus = (PowerRegister & BIT1) ? LidOpen : LidClosed;
   
-  return EFI_UNSUPPORTED;
+  return EFI_SUCCESS;
 }
 /**
 
@@ -57,10 +57,8 @@ GetPlatformDockStatus (
   OUT DOCK_STATUS  CurrentDockStatus
   )
 {
-  // This board has no dock
-  CurrentDockStatus = UnDocked;
-
-  return EFI_SUCCESS;
+  // UnDocked or no dock
+  return EFI_UNSUPPORTED;
 }
 
 

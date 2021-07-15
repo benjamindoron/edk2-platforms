@@ -3,8 +3,9 @@
 /* Global TODO: TRPS, WMI, (externally: Optimus GC6 and GPS) */
 /* TODO: Capitalise on iGFX reference code (except, check BoardAcpiDxe first) */
 
-External (\_SB.PCI0.GFX0.DD1F, DeviceObj)
-External (\_SB.PCI0.GFX0.GHDS, MethodObj)
+External (\_SB.PCI0.GFX0.DD1F, DeviceObj)  // TODO: Use BRTN instead
+External (\_SB.PCI0.GFX0.GHDS, MethodObj)  // FIXME: Might need fixed VBT - didn't port
+					  // display toggle tables previously
 External (\_SB.PCI0.LPCB, DeviceObj)
 
 Device (\_SB.PCI0.LPCB.EC0)
@@ -12,6 +13,7 @@ Device (\_SB.PCI0.LPCB.EC0)
 	Name (_HID, EisaId ("PNP0C09") /* Embedded Controller Device */)  // _HID: Hardware ID
 	Name (_GPE, 0x50)  // _GPE: General Purpose Events
 	Name (\ECOK, 0)
+//	Name (LGMR, 0x55AA55AA)  // Will be patched at runtime
 
 	Name (_CRS, ResourceTemplate ()  // _CRS: Current Resource Settings
 	{
