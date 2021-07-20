@@ -25,11 +25,10 @@
   #
   # Debug logging
   #
-  DEFINE USE_PEI_SPI_LOGGING = TRUE
-  # TODO: Support PEI in-memory logging
-  DEFINE USE_MEMORY_LOGGING  = TRUE
-  DEFINE RELEASE_LOGGING     = ($(USE_MEMORY_LOGGING) || $(USE_PEI_SPI_LOGGING))
-  DEFINE TESTING             = TRUE
+  DEFINE USE_PEI_SPI_LOGGING  = FALSE
+  DEFINE USE_MEMORY_LOGGING   = TRUE
+  DEFINE RELEASE_LOGGING      = ($(USE_PEI_SPI_LOGGING) || $(USE_MEMORY_LOGGING))
+  DEFINE TESTING              = TRUE
 
   PLATFORM_NAME                               = $(PLATFORM_PACKAGE)
   PLATFORM_GUID                               = AEEEF17C-36B6-4B68-949A-1E54CB33492F
@@ -144,11 +143,6 @@
   FspWrapperApiTestLib|IntelFsp2WrapperPkg/Library/PeiFspWrapperApiTestLib/PeiFspWrapperApiTestLib.inf
   # This board will set debugging library instances; FIXME: UART2 not used
   SerialPortLib|MdePkg/Library/BaseSerialPortLibNull/BaseSerialPortLibNull.inf
-  #rm
-  CacheAsRamLib|IntelFsp2Pkg/Library/BaseCacheAsRamLib/BaseCacheAsRamLib.inf
-  FspPlatformLib|IntelFsp2Pkg/Library/BaseFspPlatformLib/BaseFspPlatformLib.inf
-  FspCommonLib|IntelFsp2Pkg/Library/BaseFspCommonLib/BaseFspCommonLib.inf
-  FspSwitchStackLib|IntelFsp2Pkg/Library/BaseFspSwitchStackLib/BaseFspSwitchStackLib.inf
 
   #######################################
   # Silicon Initialization Package
@@ -228,19 +222,19 @@
 
 [LibraryClasses.common.PEI_CORE]
   #######################################
-  # Platform Package
+  # Edk2 Packages
   #######################################
-# Requires local patch: InitializeMemoryServices() before ProcessLibraryConstructorList()
-!if $(USE_PEI_SPI_LOGGING) == TRUE
-  DebugLib|MdePkg/Library/BaseDebugLibSerialPort/BaseDebugLibSerialPort.inf
-  SerialPortLib|$(PLATFORM_BOARD_PACKAGE)/Library/PeiSerialPortLibSpiFlash/PeiSerialPortLibSpiFlash.inf
+# SPI logging requires local patch: InitializeMemoryServices() before ProcessLibraryConstructorList()
+# In-memory logging may require too many services for early core debug output
+!if $(RELEASE_LOGGING) == TRUE
+  DebugLib|MdeModulePkg/Library/PeiDxeDebugLibReportStatusCode/PeiDxeDebugLibReportStatusCode.inf
 !endif
 
 [LibraryClasses.common.PEIM]
   #######################################
   # Edk2 Packages
   #######################################
-!if $(USE_PEI_SPI_LOGGING) == TRUE
+!if $(RELEASE_LOGGING) == TRUE
   DebugLib|MdeModulePkg/Library/PeiDxeDebugLibReportStatusCode/PeiDxeDebugLibReportStatusCode.inf
 !endif
 
@@ -380,10 +374,12 @@
       DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
 !if $(USE_PEI_SPI_LOGGING) == TRUE
       SerialPortLib|$(PLATFORM_BOARD_PACKAGE)/Library/PeiSerialPortLibSpiFlash/PeiSerialPortLibSpiFlash.inf
+!else if $(USE_MEMORY_LOGGING) == TRUE
+      SerialPortLib|MdeModulePkg/Library/PeiDxeSerialPortLibMem/PeiSerialPortLibMem.inf
 !endif
     <PcdsFixedAtBuild>
-      gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseMemory|FALSE
-      gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseSerial|$(USE_PEI_SPI_LOGGING)
+      gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseSerial|$(RELEASE_LOGGING)
+      gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeMemorySize|48
   }
 
 !if gIntelFsp2WrapperTokenSpaceGuid.PcdFspModeSelection == 1
@@ -490,7 +486,7 @@
 # @todo: Change below line to [Components.$(DXE_ARCH)] after https://bugzilla.tianocore.org/show_bug.cgi?id=2308
 #        is completed
 [Components.X64]
-# Compiled .efi but not in FV (PcdBootStage == 4, with performance build):
+# Compiled .efi but not in FV (PcdBootStage == 4-6, with performance build):
 # - dpDynamicCommand, ShellDumpLogApp, TestPointDumpApp
 # Other apps; perhaps useful:
 # - MdeModulePkg/{DumpDynPcd,*ProfileInfo,VariableInfo}, UefiCpuPkg/Cpuid
@@ -502,7 +498,14 @@
   MdeModulePkg/Universal/StatusCodeHandler/RuntimeDxe/StatusCodeHandlerRuntimeDxe.inf {
     <LibraryClasses>
       DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
+!if $(USE_MEMORY_LOGGING) == TRUE
+      SerialPortLib|MdeModulePkg/Library/PeiDxeSerialPortLibMem/DxeSerialPortLibMem.inf
+!endif
+    <PcdsFixedAtBuild>
+      gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseSerial|$(USE_MEMORY_LOGGING)
+      gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeMemorySize|512
   }
+  # TODO: SMM debug log design requires more thought
   MdeModulePkg/Universal/StatusCodeHandler/Smm/StatusCodeHandlerSmm.inf {
     <LibraryClasses>
       DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
@@ -546,7 +549,6 @@
      ShellCEntryLib|ShellPkg/Library/UefiShellCEntryLib/UefiShellCEntryLib.inf
      ShellLib|ShellPkg/Library/UefiShellLib/UefiShellLib.inf
   }
-  $(PLATFORM_BOARD_PACKAGE)/Application/ShellDumpLogApp/ShellDumpLogApp.inf
 
 !if gMinPlatformPkgTokenSpaceGuid.PcdBootToShellOnly == FALSE
   UefiCpuPkg/PiSmmCpuDxeSmm/PiSmmCpuDxeSmm.inf {

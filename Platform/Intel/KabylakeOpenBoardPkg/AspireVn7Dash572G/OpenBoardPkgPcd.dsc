@@ -264,7 +264,7 @@
 !if $(TARGET) == DEBUG
   gEfiMdeModulePkgTokenSpaceGuid.PcdSerialUseHardwareFlowControl|FALSE
 !endif
-  gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseMemory|$(USE_MEMORY_LOGGING)
+  gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseMemory|FALSE
 !if $(TARGET) == RELEASE
   gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseSerial|FALSE
 !else
@@ -312,7 +312,7 @@
   ######################################
 
   # Refer to HstiFeatureBit.h for bit definitions
-  gSiPkgTokenSpaceGuid.PcdHstiIhvFeature1|0xF2
+  gSiPkgTokenSpaceGuid.PcdHstiIhvFeature1|0xF2  # FIXME: Boot Guard and BIOS Guard not present, measured boot enforcement checking code not present
   gSiPkgTokenSpaceGuid.PcdHstiIhvFeature2|0x07
 
   ######################################
@@ -360,15 +360,18 @@
 !endif
 
 !if gMinPlatformPkgTokenSpaceGuid.PcdBootStage == 4
-  gMinPlatformPkgTokenSpaceGuid.PcdTestPointIbvPlatformFeature|{0x03, 0x07, 0x03, 0x05, 0x1F, 0x00, 0x0F, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+  # FIXME: Enabled GCD resource checking, per MinPlatformPkg.dec defaults.
+  gMinPlatformPkgTokenSpaceGuid.PcdTestPointIbvPlatformFeature|{0x03, 0x07, 0x03, 0x05, 0x3F, 0x00, 0x0F, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
 !endif
 
 !if gMinPlatformPkgTokenSpaceGuid.PcdBootStage == 5
-  gMinPlatformPkgTokenSpaceGuid.PcdTestPointIbvPlatformFeature|{0x03, 0x0F, 0x07, 0x1F, 0x1F, 0x0F, 0x0F, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+  # FIXME: Enabled GCD resource checking, per MinPlatformPkg.dec defaults.
+  gMinPlatformPkgTokenSpaceGuid.PcdTestPointIbvPlatformFeature|{0x03, 0x0F, 0x07, 0x1F, 0x3F, 0x0F, 0x0F, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
 !endif
 
 !if gMinPlatformPkgTokenSpaceGuid.PcdBootStage >= 6
-  gMinPlatformPkgTokenSpaceGuid.PcdTestPointIbvPlatformFeature|{0x03, 0x0F, 0x07, 0x1F, 0x1F, 0x0F, 0x0F, 0x07, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+  # FIXME: Enabled GCD resource checking, per MinPlatformPkg.dec defaults.
+  gMinPlatformPkgTokenSpaceGuid.PcdTestPointIbvPlatformFeature|{0x03, 0x0F, 0x07, 0x1F, 0x3F, 0x0F, 0x0F, 0x07, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
 !endif
 
 
