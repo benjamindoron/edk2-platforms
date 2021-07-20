@@ -13,14 +13,6 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #include <Library/PcdLib.h>
 #include <Library/DebugLib.h>
 #include <PlatformBoardId.h>
-//rm
-#include <Library/CacheAsRamLib.h>
-#include <Library/MtrrLib.h>
-#include <Library/MemoryAllocationLib.h>
-#include <Register/Cpuid.h>
-#include <Register/Msr.h>
-#include <Library/FspPlatformLib.h>
-#include <Library/BaseMemoryLib.h>
 
 EFI_STATUS
 EFIAPI
@@ -92,8 +84,6 @@ BoardInitAfterMemoryInit (
   )
 {
   // TODO: Set-up LGMR
-  DEBUG((DEBUG_INFO, "after memory init\n"));
-
   return EFI_SUCCESS;
 }
 
@@ -103,8 +93,6 @@ BoardInitBeforeTempRamExit (
   VOID
   )
 {
-  DEBUG((DEBUG_INFO, "before CAR teardown\n"));
-
   return EFI_SUCCESS;
 }
 
@@ -114,8 +102,6 @@ BoardInitAfterTempRamExit (
   VOID
   )
 {
-  /* REDACTED? */
-
   return EFI_SUCCESS;
 }
 

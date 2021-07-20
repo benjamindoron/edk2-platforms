@@ -27,10 +27,6 @@
   TimerLib
   PeiServicesLib
   PchResetLib
-#rm
-  FspPlatformLib
-  CacheAsRamLib
-  MtrrLib
 
 [Packages]
   MinPlatformPkg/MinPlatformPkg.dec
@@ -39,9 +35,6 @@
   MdeModulePkg/MdeModulePkg.dec
   KabylakeSiliconPkg/SiPkg.dec
   IntelSiliconPkg/IntelSiliconPkg.dec
-#rm
-  IntelFsp2Pkg/IntelFsp2Pkg.dec
-  UefiCpuPkg/UefiCpuPkg.dec
 
 [Sources]
   PeiAspireVn7Dash572GDetect.c
