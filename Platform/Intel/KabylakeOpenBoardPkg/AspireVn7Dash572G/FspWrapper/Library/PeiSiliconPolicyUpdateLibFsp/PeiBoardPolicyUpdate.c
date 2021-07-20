@@ -169,10 +169,11 @@ PeiFspBoardPolicyUpdate (
   FspsUpd->FspsConfig.IccMax[GT_SLICED_VR] = 124;       // 31A (in 1/4 increments)
   FspsUpd->FspsConfig.VrVoltageLimit[GT_SLICED_VR] = 1520;  // 1520mV
 
-  // PL1, PL2 override 35W, PL4 override 43W (in 125 mW increments)
-  FspsUpd->FspsTestConfig.PowerLimit1 = 280;
-  FspsUpd->FspsTestConfig.PowerLimit2Power = 280;
-  FspsUpd->FspsTestConfig.PowerLimit4 = 344;
+  // PL1, PL2 override 35W, PL4 override 43W (converted to processor units, then 125 mW increments)
+  // BUGBUG: PL1 and PL2 not reflected in MSR 0x610?
+  FspsUpd->FspsTestConfig.PowerLimit1 = 35000;
+  FspsUpd->FspsTestConfig.PowerLimit2Power = 35000;
+  FspsUpd->FspsTestConfig.PowerLimit4 = 43000;
 
   // ISL95857 VR
   // Send VR specific command for PS4 exit issue
@@ -261,7 +262,7 @@ PeiFspBoardPolicyUpdate (
   FspsUpd->FspsConfig.PcieRpMaxPayload[9] = PchPcieMaxPayload256;
   FspsUpd->FspsConfig.PcieRpClkSrcNumber[9] = 0x1F;  // CLKSRC pin invalid
   // L0s is broken/unnecessary at this Speed (AER: corrected errors); TODO: Prefer PcieDeviceTable
-//  FspsUpd->FspsConfig.PcieRpAspm[9] = PchPcieAspmL1;
+  FspsUpd->FspsConfig.PcieRpAspm[9] = PchPcieAspmL1;
 
   /* LPC config */
   // EC/KBC requires continuous mode
