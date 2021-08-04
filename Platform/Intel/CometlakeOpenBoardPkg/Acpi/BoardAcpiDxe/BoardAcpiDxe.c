@@ -270,7 +270,20 @@ InstallAcpiBoard (
   //
   // Platform ACPI Tables
   //
-  PublishAcpiTablesFromFv (&gEfiCallerIdGuid);
+  Status = PublishAcpiTablesFromFv (&gEfiCallerIdGuid);
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "Error: PublishAcpiTablesFromFv[%g] - %r", &gEfiCallerIdGuid, Status));
+  }
+  Status = PublishAcpiTablesFromFv (PcdGetPtr (PcdAcpiTableStorageFile));
+  if (EFI_ERROR (Status)) {
+    DEBUG ((
+      DEBUG_ERROR,
+      "Error: PublishAcpiTablesFromFv[%g] - %r",
+      PcdGetPtr (PcdAcpiTableStorageFile),
+      Status
+      ));
+    DEBUG ((DEBUG_INFO, "Does board contain ACPI tables?\n"));
+  }
 
   //
   // This protocol publish must be done after PublishAcpiTablesFromFv.

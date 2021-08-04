@@ -62,6 +62,8 @@
   gMinPlatformPkgTokenSpaceGuid.PcdPciReservedMemBase
   gMinPlatformPkgTokenSpaceGuid.PcdPciReservedMemLimit
 
+  gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiTableStorageFile
+
 [Depex]
   gEfiAcpiTableProtocolGuid           AND
   gEfiFirmwareVolume2ProtocolGuid     AND
