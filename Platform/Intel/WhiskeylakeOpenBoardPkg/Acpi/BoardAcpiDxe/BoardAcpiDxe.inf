@@ -60,6 +60,8 @@
   gWhiskeylakeOpenBoardPkgTokenSpaceGuid.PcdDisablePassiveTripPoints
   gWhiskeylakeOpenBoardPkgTokenSpaceGuid.PcdDisableCriticalTripPoints
 
+  gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiTableStorageFile
+
 [Depex]
   gEfiAcpiTableProtocolGuid           AND
   gEfiFirmwareVolume2ProtocolGuid     AND
