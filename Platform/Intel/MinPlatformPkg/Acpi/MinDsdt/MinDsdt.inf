@@ -21,6 +21,7 @@
 
 [Packages]
   MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
   MinPlatformPkg/MinPlatformPkg.dec
 
 [LibraryClasses]
@@ -40,6 +41,8 @@
 [Pcd]
   gMinPlatformPkgTokenSpaceGuid.PcdPciReservedMemBase
   gMinPlatformPkgTokenSpaceGuid.PcdPciReservedMemLimit
+
+  gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiTableStorageFile
 
 [Depex]
   gEfiAcpiTableProtocolGuid           AND

@@ -227,6 +227,16 @@ InstallMinDsdt (
 
   Status = PublishAcpiTablesFromFv (&gEfiCallerIdGuid);
   ASSERT_EFI_ERROR (Status);
+  Status = PublishAcpiTablesFromFv (PcdGetPtr (PcdAcpiTableStorageFile));
+  if (EFI_ERROR (Status)) {
+    DEBUG ((
+      DEBUG_ERROR,
+      "Error: PublishAcpiTablesFromFv[%g] - %r",
+      PcdGetPtr (PcdAcpiTableStorageFile),
+      Status
+      ));
+    DEBUG ((DEBUG_INFO, "Does board contain ACPI tables?\n"));
+  }
   
   return EFI_SUCCESS;
 }
