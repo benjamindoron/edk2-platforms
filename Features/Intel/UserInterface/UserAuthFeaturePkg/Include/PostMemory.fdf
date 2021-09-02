@@ -7,6 +7,9 @@
 #
 ##
 
-INF UserAuthFeaturePkg/UserAuthenticationDxeSmm/UserAuthenticationDxe.inf
-INF UserAuthFeaturePkg/UserAuthenticationDxeSmm/UserAuthentication2Dxe.inf
-INF UserAuthFeaturePkg/UserAuthenticationDxeSmm/UserAuthenticationSmm.inf
+!if gUserAuthFeaturePkgTokenSpaceGuid.PcdUseVersion1 == TRUE
+  INF UserAuthFeaturePkg/UserAuthenticationDxeSmm/UserAuthenticationDxe.inf
+!else
+  INF UserAuthFeaturePkg/UserAuthenticationDxeSmm/UserAuthentication2Dxe.inf
+!endif
+  INF UserAuthFeaturePkg/UserAuthenticationDxeSmm/UserAuthenticationSmm.inf

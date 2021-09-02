@@ -80,6 +80,7 @@
   #
   gLogoFeaturePkgTokenSpaceGuid.PcdLogoFeatureEnable                        |TRUE
   gUserAuthFeaturePkgTokenSpaceGuid.PcdUserAuthenticationFeatureEnable      |TRUE
+  gUserAuthFeaturePkgTokenSpaceGuid.PcdUseVersion1                          |FALSE
   gVirtualKeyboardFeaturePkgTokenSpaceGuid.PcdVirtualKeyboardFeatureEnable  |TRUE
 
   #

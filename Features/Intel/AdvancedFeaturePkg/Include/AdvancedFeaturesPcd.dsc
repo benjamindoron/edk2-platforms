@@ -82,6 +82,7 @@
 
   gLogoFeaturePkgTokenSpaceGuid.PcdLogoFeatureEnable                        |FALSE
   gUserAuthFeaturePkgTokenSpaceGuid.PcdUserAuthenticationFeatureEnable      |FALSE
+  gUserAuthFeaturePkgTokenSpaceGuid.PcdUseVersion1                          |FALSE
   gVirtualKeyboardFeaturePkgTokenSpaceGuid.PcdVirtualKeyboardFeatureEnable  |FALSE
 
   gPlatformPayloadFeaturePkgTokenSpaceGuid.PcdPlatformPayloadFeatureEnable  |FALSE

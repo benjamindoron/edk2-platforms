@@ -72,6 +72,9 @@
   UserAuthFeaturePkg/Library/UserPasswordUiLib/UserPasswordUiLib.inf
 
   # Add components here that should be included in the package build.
+!if gUserAuthFeaturePkgTokenSpaceGuid.PcdUseVersion1 == TRUE
   UserAuthFeaturePkg/UserAuthenticationDxeSmm/UserAuthenticationDxe.inf
+!else
   UserAuthFeaturePkg/UserAuthenticationDxeSmm/UserAuthentication2Dxe.inf
+!endif
   UserAuthFeaturePkg/UserAuthenticationDxeSmm/UserAuthenticationSmm.inf

@@ -38,8 +38,9 @@
   gUserAuthenticationGuid = { 0xee24a7f7, 0x606b, 0x4724, { 0xb3, 0xc9, 0xf5, 0xae, 0x4a, 0x3b, 0x81, 0x65}}
 
 [PcdsFeatureFlag]
-  ## This PCD specifies whether StatusCode is reported via USB3 Serial port.
+  ## This PCD specifies whether user authentication feature is enabled.
   gUserAuthFeaturePkgTokenSpaceGuid.PcdUserAuthenticationFeatureEnable|FALSE|BOOLEAN|0xA0000001
+  gUserAuthFeaturePkgTokenSpaceGuid.PcdUseVersion1|FALSE|BOOLEAN|0xA0000002
 
 [PcdsFixedAtBuild,PcdsPatchableInModule,PcdsDynamic,PcdsDynamicEx]
   ## Indicate whether the password is cleared.
