@@ -15,12 +15,16 @@ Scope (_TZ)
     {
 #ifdef LGMR_ENABLED
       Local0 = \_SB.PCI0.LPCB.EC0.MS0T
-//    Local1 = \_SB.PCI0.LPCB.EC0.MCSS
+      Local1 = \_SB.PCI0.LPCB.EC0.MCSS
+      /* Suppress warning over reading status flag by dummy OR */
+      Or (Local1, 1, Local1)
       Local2 = \_SB.PCI0.LPCB.EC0.MOSD
 #else
       Local0 = \_SB.PCI0.LPCB.EC0.ES0T
-//    Local1 = \_SB.PCI0.LPCB.EC0.ESSF  // "MCSS": Considering neighbouring bits, likely
-                                        // "ESSF" in thermals, not "ECSS" in notify
+      /* "MCSS": Considering neighbouring bits, likely
+       * "ESSF" in thermals, not "ECSS" in power notifications */
+      Local1 = \_SB.PCI0.LPCB.EC0.ESSF
+      Or (Local1, 1, Local1)
       Local2 = \_SB.PCI0.LPCB.EC0.EOSD
 #endif
       If (Local2)  // Thermal trip
@@ -59,7 +63,7 @@ Scope (_TZ)
       Else
       {
         /* MBEC: Called SMI function 0x12 */
-//      \_SB.PCI0.LPCB.EC0.MBEC (0x90, 0xFE, Arg0)  // SCPM = Arg0
+        \_SB.PCI0.LPCB.EC0.MBEC (0x90, 0xFE, Arg0)  // SCPM = Arg0
       }
     }
 
@@ -89,6 +93,7 @@ Scope (_TZ)
 #else
       Local0 = \_SB.PCI0.LPCB.EC0.ES1T
 #endif
+
       Return (C2K (Local0))
     }
 
@@ -116,7 +121,6 @@ Scope (_TZ)
       Local0 = 30
     }
 
-    Local0 = ((Local0 * 10) + 2732)  // Celsius to Kelvin
-    Return (Local0)
+    Return ((Local0 * 10) + 2732)  // Celsius to centi-Kelvin
   }
 }

@@ -184,11 +184,17 @@ Method (GBIF, 3, NotSerialized)
     Local7 = EBSN
 #endif
     Name (SERN, Buffer (0x06) { "     " })
+    /* Convert hex to decimal.
+     * - There appears to be a bug in the vendor's implementation:
+     *   The correct answer has, or can have, 5 digits, so Local6 = 5.
+     *   Also see "SERN" buffer.
+     * - Userspace prints reversed serial number?
+     */
     Local6 = 4
     While (Local7)
     {
       Divide (Local7, 10, Local5, Local7)
-      SERN[Local6] = (Local5 + 0x30)  // Add ASCII 0x30 to get character
+      SERN[Local6] = (Local5 + 0x30)  // Add 0x30 to get numeric character
       Local6--
     }
 
@@ -310,7 +316,7 @@ Method (GBST, 4, NotSerialized)  // All on one page
     If (Arg2)
     {
       Local1 *= Local3
-      Local1 /= 1000  /* Remainder ignored */
+      Local1 /= 1000  /* Remainder ignored by vendor */
     }
   }
   Else
@@ -382,6 +388,7 @@ Device (BAT0)
 
   Method (_BIF, 0, NotSerialized)  // _BIF: Battery Information
   {
+    /* Bitwise AND by vendor is lossy? */
     Local6 = B0ST
     Local7 = 20
     While (Local6 && Local7)

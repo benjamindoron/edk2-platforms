@@ -6,25 +6,27 @@
 **/
 
 // TODO: Add HID support for touchpad, etc.
+// - Does board actually support DPTF?
 #include "thermal.asl"
 
 External (\_SB.SLPB, DeviceObj)
-
-// TODO: Need hooks from BoardAcpiDxe
 
 Scope (_SB)
 {
   Method (MPTS, 1, NotSerialized)  // _PTS: Prepare To Sleep
   {
     ^PCI0.LPCB.EC0.ECPS (Arg0)
+    /* TBT and DTS not supported, TPM.PTS can be called elsewhere */
   }
 
   Method (MWAK, 1, Serialized)  // _WAK: Wake
   {
     ^PCI0.LPCB.EC0.ECWK (Arg0)
+    /* No GPIO expander, 8254 clock-gating and PCIe PME can be performed elsewhere */
 
     If ((Arg0 == 3) || (Arg0 == 4))
     {
+      /* DTS and TBT not supported, iGFX RC variable update stripped */
       Notify (LID0, 0x80) // Status Change
     }
   }

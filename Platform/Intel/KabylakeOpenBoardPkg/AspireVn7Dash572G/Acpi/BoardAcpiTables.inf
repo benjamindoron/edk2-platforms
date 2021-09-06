@@ -13,5 +13,9 @@
   MODULE_TYPE          = USER_DEFINED
   VERSION_STRING       = 1.0
 
+[Packages]
+  KabylakeOpenBoardPkg/OpenBoardPkg.dec
+  MdePkg/MdePkg.dec
+
 [Sources]
   BoardSsdt.asl

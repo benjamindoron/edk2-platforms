@@ -5,18 +5,33 @@
 
 **/
 
-/* Global TODO: (externally: Optimus GC6 and GPS)
+/*
+ * Global TODO: (externally: Optimus GC6 and GPS)
  * - TRPS: This is SMI 0xDD, likely in SmmOemDriver. This SW SMI adds to and executes
  *         a table of function pointers produced throughout the OEM 'value-add' stack.
+ *         - Arg0 - "SFUN" - is index into "$FNC" pointer table? It's easier to
+ *           correlate *CommonService use: Offset 13 creates TRPS handlers.
+ *         - Known functions:
+ *           - 0x80 calls offset 0 in ACER_BOOT_DEVICE_SERVICE_PROTOCOL_GUID.
+ *             - NB: efiXplorer can miss InstallProtocolInterface() when Interface is local
+ *           - 0x81 toggles Intel Dynamic Acceleration in IA32_MISC_ENABLE MSR.
+ *           - 0x82 does switch on "OSYS" to set EC byte. Suspect this is for OS features.
+ *         (A CVE exists in the vendor code only if it never sets the offset in the buffer.)
+ * - RBEC/WBEC/MBEC: This is SMI 0xDD, "functions" 0x10, 0x11 and 0x12 in SmmKbcDriver,
+ *        added into SmmCommonService table at its protocol notify. Performs read, write
+ *        and read-modify-write from buffer. We will use ACPI instead.
  * - WMI: This is likely SMI 0xD0 in A01WMISmmCallback. This SW SMI likely uses the WMI
  *        object and consumes the OEM 'value-add' stack for EC and presumably the A01*
- *        OEM/ODM 'value-add' stack.
+ *        OEM/ODM 'value-add' stack. An SSDT contains the device and EC0 provides "GCMS"
+ *        and "GOTS" method helpers.
  *
- * Generally, more reversing is needed.
+ * Generally, more information is needed.
+ * TODO: Restore stripped features using reference code (except, check BoardAcpiDxe first)
+ *       and implement more board features: lid and touchpad trigger wake from S3,
+ *       Fn-Ctrl swap, sticky Fn keys and always-on USB charger.
  */
-/* TODO: Implement more features around reference code (except, check BoardAcpiDxe first) */
 
-// TODO: Enable and test
+// TODO/TEST
 #undef LGMR_ENABLED
 
 // "DIDX" - "DeviceIdX" is uninitialised, cannot use "BRTN" method yet
@@ -40,17 +55,7 @@ Device (\_SB.PCI0.LPCB.EC0)
     IO (Decode16, 0x66, 0x66, 0, 1)
   })
 
-  OperationRegion (ECO1, SystemIO, 0x62, 1)
-  Field (ECO1, ByteAcc, Lock, Preserve)
-  {
-    PX62, 8
-  }
-
-  OperationRegion (ECO2, SystemIO, 0x66, 1)
-  Field (ECO2, ByteAcc, Lock, Preserve)
-  {
-    PX66, 8
-  }
+  #include "eclib.asl"
 
 #ifdef LGMR_ENABLED
   OperationRegion (ECMB, SystemMemory, LGMR, 0x200)
@@ -84,10 +89,12 @@ Device (\_SB.PCI0.LPCB.EC0)
     EX3G, 1,        /* 3G */
         , 3,
     RFEX, 1,        /* RF present */
-#if 0  // Merely a guess
-    Offset (0x55),
-    BTH0, 8,        /* Battery threshold? TODO: Actually diff in modified vendor FW */
-#endif
+/*
+ * NOTE: Some reverse engineering, as well as corroborating vendor's hidden SetupUtility
+ * options with the EC's memory space, suggests that offset 0x55 might be the battery
+ * threshold
+ * - TODO: Actually diff changes in modified vendor FW
+ */
     Offset (0x57),
         , 7,
     AHKB, 1,        /* Hotkey triggered */
@@ -204,14 +211,19 @@ Device (\_SB.PCI0.LPCB.EC0)
       {
         TINI ()
         EOSS = 0x05
-//      OSIN ()
+        // OSYS retrieved by SMM, Arg3 is unused
+//      TRPS (0x82, 1, 0)
 
-        /* Other pages return valid data too, but this seems to be the page
+        /*
+         * Other pages return valid data too, but this seems to be the page
          * we are expecting - persistently in ectool dump with vendor firmware
-         * FIXME: Contents of other pages? */
+         * FIXME: Contents of other pages?
+         */
         ETID = 0x20
       }
     }
+
+    /* iGFX RC method call stripped */
   }
 
   Method (TINI, 0, NotSerialized)
@@ -223,10 +235,8 @@ Device (\_SB.PCI0.LPCB.EC0)
     }
     Else
     {
-      /* WBEC: Called SMI function 0x11 */
-//    EC_WRITE (0x92, 0)  // ETAF = 0
-      /* MBEC: Called SMI function 0x12 */
-//    MBEC (0x10, 0xFD, 0x02)  // ETEE = 1
+      WBEC (0x92, 0)  // ETAF = 0
+      MBEC (0x10, 0xFD, 0x02)  // ETEE = 1
     }
   }
 
@@ -234,10 +244,8 @@ Device (\_SB.PCI0.LPCB.EC0)
   Method (ECPS, 1, NotSerialized)  // _PTS: Prepare To Sleep
   {
     ECSS = Arg0
-//  COSI = OSYS
-//  SPR1 = Arg0
-    /* TRPS: Generic SMI trap handler */
-//  TRPS (0x82, 0x02)
+    // OSYS retrieved by SMM
+//  TRPS (0x82, 0x02, Arg0)
     If ((Arg0 == 3) || (Arg0 == 4))
     {
       RFST = RFEX
@@ -250,38 +258,23 @@ Device (\_SB.PCI0.LPCB.EC0)
     EOSS = Arg0
     TINI ()
     Notify (BAT0, 0x81) // Information Change
-//  COSI = OSYS
-//  SPR1 = Arg0
-    /* TRPS: Generic SMI trap handler */
-//  TRPS (0x82, 0x03)
+    // OSYS retrieved by SMM
+//  TRPS (0x82, 0x03, Arg0)
     If ((Arg0 == 3) || (Arg0 == 4))
     {
       RFEX = RFST
       Notify (SLPB, 0x02) // Device Wake
     }
+    /* iGFX RC method call stripped */
   }
 
-#if 0  // TODO: Figure out what this is for
-  Method (OSIN, 0, NotSerialized)
+  Method (MBEC, 3, Serialized)
   {
-    COSI = OSYS
-    /* TRPS: Generic SMI trap handler */
-    TRPS (0x82, 1)
-  }
-#endif
-
-#if 0  // TODO: Implement
-  Method (MBEC, 3, Serialized)  // Read-Modify-Write
-  {
-    /* Based on similar methods/tables at
-     * https://github.com/linuxhw/ACPI/blob/master/Notebook/Sony/SVE1713/SVE1713S1RW/506CDC50E671#L9359
-     * which use ASL instead of SMM calls */
-    Local0 = EC_READ (Arg0)
+    Local0 = RBEC (Arg0)
     Local0 &= Arg1
     Local0 |= Arg2
-    EC_WRITE (Arg0, Local0)
+    WBEC (Arg0, Local0)
   }
-#endif
 
   /* Graphical hotkey */
   Method (_Q19, 0, NotSerialized)
@@ -316,7 +309,8 @@ Device (\_SB.PCI0.LPCB.EC0)
         }
         ElseIf ((Local1 > 0x80) && (Local1 < 0xA0))
         {
-          TPEN ^= 1  /* TODO: Not working. What else does WMI do here? */
+          /* TODO: Not working when called by HID mode. What does WMI do here? */
+          TPEN ^= 1
         }
       }
     }
@@ -330,8 +324,7 @@ Device (\_SB.PCI0.LPCB.EC0)
     }
     Else
     {
-      /* MBEC: Called SMI function 0x12 */
-//    MBEC (0x92, 0xF7, 0x08)  // EOSD = 1
+      MBEC (0x92, 0xF7, 0x08)  // EOSD = 1
     }
 
     Sleep (500)
@@ -341,9 +334,8 @@ Device (\_SB.PCI0.LPCB.EC0)
 
   Method (_Q3F, 0, NotSerialized)
   {
-    \DBGH ("EC Query: 0x3F - TRPS")
-    /* TRPS: Generic SMI trap handler */
-//  TRPS (0x80, 0)
+    // Arg3 is unused
+//  TRPS (0x80, 0, 0)
   }
 
   Method (_Q40, 0, NotSerialized)
@@ -397,46 +389,44 @@ Device (\_SB.PCI0.LPCB.EC0)
 
   Method (_Q60, 0, NotSerialized)
   {
-    \DBGH ("EC Query: 0x60 -> WMI")
+    \DBGH ("EC Query (0x60): WMI")
   }
 
   Method (_Q61, 0, NotSerialized)
   {
-    \DBGH ("EC Query: 0x61 -> WMI")
+    \DBGH ("EC Query (0x61): WMI")
   }
 
   Method (_Q62, 0, NotSerialized)
   {
-    \DBGH ("EC Query: 0x62 -> Optimus GC6")
+    \DBGH ("EC Query (0x62): Optimus GC6 or NVIDIA GPS")
   }
 
   Method (_Q63, 0, NotSerialized)
   {
-    \DBGH ("EC Query: 0x63 -> Optimus GC6")
+    \DBGH ("EC Query (0x63): Optimus GC6 or NVIDIA GPS")
   }
 
   Method (_Q67, 0, NotSerialized)
   {
-    \DBGH ("EC Query: 0x67 -> NVIDIA GPS")
+    \DBGH ("EC Query (0x67): NVIDIA GPS")
   }
 
   Method (_Q68, 0, NotSerialized)
   {
-    \DBGH ("EC Query: 0x68 -> NVIDIA GPS")
+    \DBGH ("EC Query (0x68): NVIDIA GPS")
   }
 
   Method (_Q6C, 0, NotSerialized)
   {
-    \DBGH ("EC Query: 0x6C - TRPS")
-    /* TRPS: Generic SMI trap handler */
-//  TRPS (0x81, 0)
+    // Arg3 is unused
+//  TRPS (0x81, 0, 0)
   }
 
   Method (_Q6D, 0, NotSerialized)
   {
-    \DBGH ("EC Query: 0x6D - TRPS")
-    /* TRPS: Generic SMI trap handler */
-//  TRPS (0x81, 1)
+    // Arg3 is unused
+//  TRPS (0x81, 1, 0)
   }
 
   #include "ac.asl"
