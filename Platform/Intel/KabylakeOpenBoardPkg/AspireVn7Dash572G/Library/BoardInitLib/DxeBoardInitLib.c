@@ -8,17 +8,22 @@
 **/
 
 #include <PiDxe.h>
-#include <Library/UefiRuntimeServicesTableLib.h>
+#include <Library/BoardEcLib.h>
 #include <Library/BoardInitLib.h>
 #include <Library/DebugLib.h>
 #include <Library/EcLib.h>
-#include <Library/BoardEcLib.h>
+#include <Library/UefiBootServicesTableLib.h>
+#include <Library/UefiRuntimeServicesTableLib.h>
+#include <Protocol/ResetNotification.h>
+
+EFI_RESET_NOTIFICATION_PROTOCOL  *mResetNotify = NULL;
 
 /**
-  Update the EC's clock?
+  Update the EC's clock.
 
 **/
 VOID
+EFIAPI
 EcSendTime (
   VOID
   )
@@ -26,10 +31,12 @@ EcSendTime (
   EFI_STATUS  Status;
   EFI_TIME    EfiTime;
   // Time could be negative (before 2016)
-  INTN        EcTime;
+  INT32       EcTime;
   UINT8       EcTimeByte;
   INTN        Index;
   UINT8       EcResponse;
+
+  DEBUG ((DEBUG_INFO, "%a() Starts\n", __FUNCTION__));
 
   Status = gRT->GetTime (&EfiTime, NULL);
   if (EFI_ERROR (Status)) {
@@ -56,24 +63,71 @@ EcSendTime (
   if (!EFI_ERROR (Status)) {
     DEBUG ((DEBUG_INFO, "EC: response 0x%x\n", EcResponse));
   }
+
+  DEBUG ((DEBUG_INFO, "%a() Ends\n", __FUNCTION__));
 }
 
 /**
-  Configure EC
+  Process an EC time request.
 
 **/
 VOID
+EFIAPI
 EcRequestsTime (
   VOID
   )
 {
   UINT8           Dat;
 
+  DEBUG ((DEBUG_INFO, "%a() Starts\n", __FUNCTION__));
+
   /* This is executed as protocol notify in vendor's RtKbcDriver when *CommonService
    * protocol is installed. Effectively, this code could execute from the entrypoint */
   EcCmd90Read (0x79, &Dat);
   if (Dat & BIT0) {
     EcSendTime ();
+  }
+
+  DEBUG ((DEBUG_INFO, "%a() Ends\n", __FUNCTION__));
+}
+
+/**
+  Notify EC of reset events.
+
+  @param[in] ResetType    The type of reset to perform.
+  @param[in] ResetStatus  The status code for the reset.
+  @param[in] DataSize     The size, in bytes, of ResetData.
+  @param[in] ResetData    For a ResetType of EfiResetCold, EfiResetWarm, or EfiResetShutdown
+                          the data buffer starts with a Null-terminated string, optionally
+                          followed by additional binary data. The string is a description
+                          that the caller may use to further indicate the reason for the
+                          system reset. For a ResetType of EfiResetPlatformSpecific the data
+                          buffer also starts with a Null-terminated string that is followed
+                          by an EFI_GUID that describes the specific type of reset to
+                          perform.
+
+**/
+VOID
+EFIAPI
+EcResetSystemHook (
+  IN EFI_RESET_TYPE           ResetType,
+  IN EFI_STATUS               ResetStatus,
+  IN UINTN                    DataSize,
+  IN VOID                     *ResetData OPTIONAL
+  )
+{
+  // If boolean PCD tokens 0xBD, 0xBE and 0xBF are set in vendor FW,
+  // OEM also sends command 0x5A with argument 0xAA via ACPI "CMDB" method and stalls for
+  // 100000, then sets ResetType to EfiResetShutdown.
+  // PCD token 0xBF may be set in a separate function of DxeOemDriver if
+  // some bits of EC RAM offset 0x5E are set.
+  // TODO: More information is needed
+  if (ResetType == EfiResetShutdown) {
+    EcCmd91Write (0x76, 7);  // "ECSS" register
+    // TODO: Write twice, like OEM?
+    EcCmd91Write (0x76, 7);  // "ECSS" register
+    // Now OEM calls function offset 2 in ACER_BOOT_DEVICE_SERVICE_PROTOCOL_GUID.
+    // TODO: What does this do?
   }
 }
 
@@ -89,7 +143,23 @@ BoardInitAfterPciEnumeration (
   VOID
   )
 {
+  EFI_STATUS                       Status;
+
+  DEBUG ((DEBUG_INFO, "%a() Starts\n", __FUNCTION__));
+
+  // Send EC the present time, if requested
   EcRequestsTime ();
+
+  // Add a callback to gRT->ResetSystem() to notify EC, rather than hooking the table,
+  // (as vendor's DxeOemDriver does)
+  Status = gBS->LocateProtocol (&gEfiResetNotificationProtocolGuid, NULL, (VOID **) &mResetNotify);
+  if (!EFI_ERROR (Status)) {
+    Status = mResetNotify->RegisterResetNotify (mResetNotify, EcResetSystemHook);
+    ASSERT_EFI_ERROR (Status);
+    DEBUG ((DEBUG_INFO, "EC: Added callback to notify EC of resets\n"));
+  }
+
+  DEBUG ((DEBUG_INFO, "%a() Ends\n", __FUNCTION__));
   return EFI_SUCCESS;
 }
 
@@ -120,5 +190,17 @@ BoardInitEndOfFirmware (
   VOID
   )
 {
+  EFI_STATUS                       Status;
+
+  DEBUG ((DEBUG_INFO, "%a() Starts\n", __FUNCTION__));
+
+  // Remove ResetSystem callback. ACPI will be notifying EC of events
+  if (mResetNotify != NULL) {
+    Status = mResetNotify->UnregisterResetNotify (mResetNotify, EcResetSystemHook);
+    ASSERT_EFI_ERROR (Status);
+    DEBUG ((DEBUG_INFO, "EC: Removed callback to notify EC of resets\n"));
+  }
+
+  DEBUG ((DEBUG_INFO, "%a() Ends\n", __FUNCTION__));
   return EFI_SUCCESS;
 }
