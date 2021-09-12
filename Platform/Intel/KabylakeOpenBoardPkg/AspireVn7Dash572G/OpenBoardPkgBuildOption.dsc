@@ -84,6 +84,7 @@ DEFINE DSC_PLTPKG_FEATURE_BUILD_OPTIONS = $(DSC_PLTPKG_FEATURE_BUILD_OPTIONS) $(
 DEFINE DSC_PLTPKG_FEATURE_BUILD_OPTIONS = $(DSC_PLTPKG_FEATURE_BUILD_OPTIONS) $(DSC_ACPI_BUILD_OPTIONS) $(UP_SERVER_SUPPORT_BUILD_OPTIONS) $(USBTYPEC_BUILD_OPTION) $(SINITBIN_BUILD_OPTION) $(MINTREE_FLAG_BUILD_OPTION)
 
 # FIXME: $(DSC_PLTPKG_FEATURE_BUILD_OPTIONS) is passed multiple times
+# BUGBUG: `-Wl,--allow-multiple-definition` breaks CLANG build
 [BuildOptions.Common.EDKII]
 
 #
@@ -141,8 +142,7 @@ MSFT:  *_*_X64_ASLCC_FLAGS    = $(DSC_PLTPKG_FEATURE_BUILD_OPTIONS)
   MSFT:*_*_*_DLINK_FLAGS = /ALIGN:4096
   GCC:*_*_*_DLINK_FLAGS = -z common-page-size=0x1000
 
-# FIXME: Protection broken, but works on UefiPayload, and not related to
-# FspWrapperNotifyDxe. Cannot be related to SMM?
+# FIXME: Protection broken, yet works on UefiPayload. Consider diffing module/library include lists (unrelated to FspWrapperNotifyDxe).
 # Force PE/COFF sections to be aligned at 4KB boundaries to support NX protection
 [BuildOptions.common.EDKII.DXE_DRIVER, BuildOptions.common.EDKII.DXE_CORE, BuildOptions.common.EDKII.UEFI_DRIVER, BuildOptions.common.EDKII.UEFI_APPLICATION]
   #MSFT:*_*_*_DLINK_FLAGS = /ALIGN:4096

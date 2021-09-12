@@ -2,6 +2,7 @@
   Acer Aspire VN7-572G SMM Board ACPI Enable library
 
 Copyright (c) 2017 - 2019, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2021, Baruch Binyamin Doron<BR>
 SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
@@ -20,8 +21,8 @@ AspireVn7Dash572GBoardEnableAcpi (
   EFI_STATUS  Status;
 
   /* Tests at runtime show this re-enables charging and battery reporting
-   * - Obtained somewhere from somewhere in vendor's SmmKbcDriver (or RtKbcDriver).
-   *   Further reversing will be performed */
+   * - Obtained from somewhere in vendor's SmmKbcDriver.
+   *   Further information is needed */
   Status = SendEcCommand (0xE9);  /* Vendor implements using ACPI "CMDB" register" */
   if (EFI_ERROR (Status)) {
     DEBUG ((DEBUG_ERROR, "%a(): SendEcCommand(0xE9) failed!\n", __FUNCTION__));
@@ -48,8 +49,8 @@ AspireVn7Dash572GBoardDisableAcpi (
   EFI_STATUS  Status;
 
   /* Tests at runtime show this disables charging and battery reporting
-   * - Obtained somewhere from somewhere in vendor's SmmKbcDriver (or RtKbcDriver).
-   *   Further reversing will be performed */
+   * - Obtained from somewhere in vendor's SmmKbcDriver.
+   *   Further information is needed */
   Status = SendEcCommand (0xE9);  /* Vendor implements using ACPI "CMDB" register" */
   if (EFI_ERROR (Status)) {
     DEBUG ((DEBUG_ERROR, "%a(): SendEcCommand(0xE9) failed!\n", __FUNCTION__));

@@ -62,19 +62,18 @@
 
 [LibraryClasses.IA32]
   FspWrapperApiLib
-  FspWrapperPlatformLib
   BaseMemoryLib
   DebugLib
-  HobLib
   IoLib
   PcdLib
   MmPciLib
-  ConfigBlockLib
+  PciLib
   PeiSaPolicyLib
   PchInfoLib
   PchHsioLib
   PchPcieRpLib
   SiPolicyLib
+  MemoryAllocationLib
   PeiLib
 
 [Pcd]

@@ -279,7 +279,7 @@ INF IntelFsp2WrapperPkg/FspsWrapperPeim/FspsWrapperPeim.inf
 INF $(PLATFORM_PACKAGE)/PlatformInit/SiliconPolicyPei/SiliconPolicyPeiPostMem.inf
 
 !if gSiPkgTokenSpaceGuid.PcdPeiDisplayEnable == TRUE
-FILE FREEFORM = 4ad46122-ffeb-4a52-bfb0-518cfca02db0 {
+FILE FREEFORM = 4AD46122-FFEB-4A52-BFB0-518CFCA02DB0 {
   SECTION RAW = $(BOARD)/Vbt.bin
   SECTION UI  = "Vbt"
 }
@@ -346,6 +346,7 @@ APRIORI DXE {
 INF  UefiCpuPkg/CpuDxe/CpuDxe.inf
 INF  MdeModulePkg/Bus/Pci/PciHostBridgeDxe/PciHostBridgeDxe.inf
 
+# TODO: Add NvmExpressDxe if supporting Newgate and RayleighSLS
 INF  MdeModulePkg/Bus/Pci/SataControllerDxe/SataControllerDxe.inf
 INF  MdeModulePkg/Bus/Ata/AtaBusDxe/AtaBusDxe.inf
 INF  MdeModulePkg/Bus/Ata/AtaAtapiPassThru/AtaAtapiPassThru.inf

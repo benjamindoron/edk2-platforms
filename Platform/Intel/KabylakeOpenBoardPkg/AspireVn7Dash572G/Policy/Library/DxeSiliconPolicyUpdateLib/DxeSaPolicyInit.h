@@ -8,12 +8,9 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #ifndef _SA_POLICY_INIT_DXE_H_
 #define _SA_POLICY_INIT_DXE_H_
 
-#include <Library/BaseMemoryLib.h>
-#include <Library/MemoryAllocationLib.h>
 #include <Library/DebugLib.h>
 #include <Library/UefiBootServicesTableLib.h>
 #include <Protocol/SaPolicy.h>
-#include <Library/DxeSaPolicyLib.h>
 
 #include <SaAccess.h>
 

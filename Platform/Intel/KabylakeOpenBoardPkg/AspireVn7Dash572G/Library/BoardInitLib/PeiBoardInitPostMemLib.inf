@@ -10,7 +10,7 @@
 [Defines]
   INF_VERSION                    = 0x00010005
   BASE_NAME                      = PeiBoardPostMemInitLib
-  FILE_GUID                      = 7fcc3900-d38d-419f-826b-72481e8b5509
+  FILE_GUID                      = 7FCC3900-D38D-419F-826B-72481E8B5509
   MODULE_TYPE                    = BASE
   VERSION_STRING                 = 1.0
   LIBRARY_CLASS                  = BoardInitLib
@@ -18,8 +18,6 @@
 [LibraryClasses]
   BaseLib
   DebugLib
-  BaseMemoryLib
-  MemoryAllocationLib
   PcdLib
   SiliconInitLib
   PchCycleDecodingLib

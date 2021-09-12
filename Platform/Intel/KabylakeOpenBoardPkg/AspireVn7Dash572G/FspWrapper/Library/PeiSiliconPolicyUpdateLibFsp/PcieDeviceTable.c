@@ -7,7 +7,6 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 **/
 
 #include "PeiPchPolicyUpdate.h"
-#include <Library/PchPcieRpLib.h>
 
 #define PCI_CLASS_NETWORK             0x02
 #define PCI_CLASS_NETWORK_ETHERNET    0x00

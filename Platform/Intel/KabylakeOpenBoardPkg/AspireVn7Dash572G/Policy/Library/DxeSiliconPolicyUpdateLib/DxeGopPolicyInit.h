@@ -9,11 +9,8 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #define _GOP_POLICY_INIT_DXE_H_
 
 #include <Protocol/FirmwareVolume2.h>
-#include <Library/UefiLib.h>
 #include <Library/BaseLib.h>
-#include <Library/DxeServicesTableLib.h>
 #include <Library/UefiBootServicesTableLib.h>
-#include <Library/UefiRuntimeServicesTableLib.h>
 #include <Library/BaseMemoryLib.h>
 #include <Library/DebugLib.h>
 #include <Library/PcdLib.h>

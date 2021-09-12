@@ -12,14 +12,16 @@
 #include <Library/PcdLib.h>
 #include <PchPolicyCommon.h>
 
-/* TODO:
+/*
+ * TODO:
  * - Validate PCH Sample policies: only SA one used by default.
  * - Remove likely fuse-disabled devices when reset handling is committed?
  * - Remove duplicate policy
  *   - Consider updating some policies, rather than overriding. This could be factored into
  *     BoardInitLib for deduplication
  * - Copy initialised array, where sane
- * - Set IgdDvmt50PreAlloc? */
+ * - Set IgdDvmt50PreAlloc?
+ */
 
 #define SA_VR           0
 #define IA_VR           1

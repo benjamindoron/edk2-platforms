@@ -17,6 +17,8 @@
 
 [LibraryClasses]
   BaseLib
+  BaseMemoryLib
+  UefiBootServicesTableLib
   PcdLib
   DebugLib
   ConfigBlockLib

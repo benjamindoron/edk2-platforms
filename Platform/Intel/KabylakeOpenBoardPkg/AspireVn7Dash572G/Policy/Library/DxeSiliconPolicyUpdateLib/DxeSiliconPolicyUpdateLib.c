@@ -1,14 +1,13 @@
 /** @file
 
 Copyright (c) 2017, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2021, Baruch Binyamin Doron<BR>
 SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
 
 #include <Library/ConfigBlockLib.h>
 #include <Library/SiliconPolicyUpdateLib.h>
-#include <Library/PcdLib.h>
-#include <Library/DebugLib.h>
 #include <Protocol/GopPolicy.h>
 #include <Protocol/SaPolicy.h>
 

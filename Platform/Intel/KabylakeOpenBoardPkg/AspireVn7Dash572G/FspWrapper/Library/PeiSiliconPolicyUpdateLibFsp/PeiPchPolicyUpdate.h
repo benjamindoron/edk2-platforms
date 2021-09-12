@@ -17,10 +17,11 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #include <Library/DebugLib.h>
 #include <Library/IoLib.h>
 #include <Library/MmPciLib.h>
-#include <Ppi/SiPolicy.h>
 
 #include <FspEas.h>
 #include <FspmUpd.h>
 #include <FspsUpd.h>
+
+#include <PchPolicyCommon.h>
 
 #endif

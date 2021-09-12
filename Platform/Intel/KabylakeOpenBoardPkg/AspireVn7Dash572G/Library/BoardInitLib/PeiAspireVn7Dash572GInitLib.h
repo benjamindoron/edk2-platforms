@@ -8,10 +8,9 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #ifndef _PEI_ASPIRE_VN7_572G_BOARD_INIT_LIB_H_
 #define _PEI_ASPIRE_VN7_572G_BOARD_INIT_LIB_H_
 
-#include <Uefi.h>
+#include <PiPei.h>
 #include <Library/BaseLib.h>
 #include <Library/PcdLib.h>
-#include <Library/MemoryAllocationLib.h>
 #include <Library/DebugLib.h>
 #include <Library/GpioLib.h>
 #include <Ppi/SiPolicy.h>

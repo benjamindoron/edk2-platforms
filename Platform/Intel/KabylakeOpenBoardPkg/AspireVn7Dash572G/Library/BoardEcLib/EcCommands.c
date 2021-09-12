@@ -13,7 +13,8 @@
 #include <Library/EcLib.h>
 #include <Library/IoLib.h>
 
-/* Notes:
+/*
+ * Notes:
  * - ACPI "CMDB": Writing to this offset is equivalent to sending commands.
  *   The CMDx bytes contain the command parameters.
  *
@@ -21,9 +22,10 @@
  *   - Commands: 0x58, 0xE1 and 0xE2
  *     - 0x51, 0x52: EC flash write?
  *   - ACPI CMDB: 0x63 and 0x64, 0xC7
- *     - 0x0B: Flash write (Boolean argument? Set in offset 0x0B?)
+ *     - 0x0B: Flash lock/write (Set offset 0x0B?)
+ *   - Key/recovery detection?
  *
- * Reversing vendor's protocols:
+ * Vendor's protocols:
  * - Only read and write are used.
  * - Query, ACPI "CMDB" processing and command 58 are unused.
  * - Equivalent KbcPeim is an unused PPI.
@@ -32,9 +34,9 @@
  */
 
 #define EC_INDEX_IO_PORT            0x1200
-#define EC_INDEX_IO_HIGH_ADDR_PORT  EC_INDEX_IO_PORT+1
-#define EC_INDEX_IO_LOW_ADDR_PORT   EC_INDEX_IO_PORT+2
-#define EC_INDEX_IO_DATA_PORT       EC_INDEX_IO_PORT+3
+#define EC_INDEX_IO_HIGH_ADDR_PORT  (EC_INDEX_IO_PORT + 1)
+#define EC_INDEX_IO_LOW_ADDR_PORT   (EC_INDEX_IO_PORT + 2)
+#define EC_INDEX_IO_DATA_PORT       (EC_INDEX_IO_PORT + 3)
 
 /**
   Reads a byte of EC RAM.

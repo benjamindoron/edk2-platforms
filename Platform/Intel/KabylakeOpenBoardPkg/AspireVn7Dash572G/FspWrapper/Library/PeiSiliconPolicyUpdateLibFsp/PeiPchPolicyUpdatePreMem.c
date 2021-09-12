@@ -9,7 +9,6 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #include "PeiPchPolicyUpdate.h"
 #include <Library/BaseMemoryLib.h>
 #include <Library/PchInfoLib.h>
-#include <Library/PchPcrLib.h>
 #include <Library/PchHsioLib.h>
 #include <Library/PchPcieRpLib.h>
 #include <PchHsioPtssTables.h>

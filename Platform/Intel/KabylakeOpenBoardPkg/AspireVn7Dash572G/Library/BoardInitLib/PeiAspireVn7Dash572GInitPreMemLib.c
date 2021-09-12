@@ -1,6 +1,7 @@
 /** @file
 
 Copyright (c) 2017 - 2022, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2021, Baruch Binyamin Doron<BR>
 SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
@@ -8,7 +9,6 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #include <PiPei.h>
 #include <Library/DebugLib.h>
 #include <Library/IoLib.h>
-#include <Library/MemoryAllocationLib.h>
 #include <Library/PcdLib.h>
 #include <Library/PchCycleDecodingLib.h>
 #include <Library/PchPmcLib.h>
@@ -16,7 +16,6 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #include <Library/PciLib.h>
 #include <Library/SiliconInitLib.h>
 #include <Library/TimerLib.h>
-#include <Library/PeiLib.h>
 
 #include <Library/GpioLib.h>
 #include <GpioPinsSklLp.h>
@@ -47,12 +46,6 @@ GLOBAL_REMOVE_IF_UNREFERENCED const UINT16 RcompTargetAspireVn7Dash572G[SA_MRC_M
 #define DGPU_HOLD_RST	GPIO_SKL_LP_GPP_B4	/* Active low */
 #define DGPU_PWR_EN	GPIO_SKL_LP_GPP_B21	/* Active low */
 
-EFI_STATUS
-EFIAPI
-AspireVn7Dash572GBoardDetect (
-  VOID
-  );
-
 /**
   Aspire VN7-572G board configuration init function for PEI pre-memory phase.
 
@@ -75,7 +68,7 @@ AspireVn7Dash572GInitPreMem (
   //
   PcdSet8S (PcdSaMiscUserBd, 5);     // ULT/ULX/Mobile Halo
   PcdSet8S (PcdMrcCaVrefConfig, 2);  // DDR4: "VREF_CA to CH_A and VREF_DQ_B to CH_B"
-  // TODO: Clear Dq/Dqs?
+  // TODO: Search vendor FW for Dq/Dqs. Unnecessary if FSP detects LPDDR
   PcdSetBoolS (PcdMrcDqPinsInterleaved, TRUE);
 
   PcdSet32S (PcdMrcRcompResistor, (UINTN) RcompResistorAspireVn7Dash572G);
@@ -241,8 +234,15 @@ AspireVn7Dash572GBoardInitAfterMemoryInit (
   if (EFI_ERROR (Status)) {
     DEBUG ((DEBUG_WARN, "Failed to enable LGMR. Were ACPI tables built for LGMR memory map?\n"));
   }
+
   return EFI_SUCCESS;
 }
+
+EFI_STATUS
+EFIAPI
+AspireVn7Dash572GBoardDetect (
+  VOID
+  );
 
 EFI_STATUS
 EFIAPI

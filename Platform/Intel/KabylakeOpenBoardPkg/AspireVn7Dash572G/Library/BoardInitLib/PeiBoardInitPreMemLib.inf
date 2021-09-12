@@ -10,7 +10,7 @@
 [Defines]
   INF_VERSION                    = 0x00010005
   BASE_NAME                      = PeiBoardInitPreMemLib
-  FILE_GUID                      = ec3675bc-1470-417d-826e-37378140213d
+  FILE_GUID                      = EC3675BC-1470-417D-826E-37378140213D
   MODULE_TYPE                    = BASE
   VERSION_STRING                 = 1.0
   LIBRARY_CLASS                  = BoardInitLib
@@ -18,8 +18,6 @@
 [LibraryClasses]
   BaseLib
   DebugLib
-  BaseMemoryLib
-  MemoryAllocationLib
   PcdLib
   SiliconInitLib
   TimerLib
@@ -30,7 +28,6 @@
   EcLib
   BoardEcLib
   GpioLib
-  PeiLib
   PeiServicesLib
   PchPmcLib
 

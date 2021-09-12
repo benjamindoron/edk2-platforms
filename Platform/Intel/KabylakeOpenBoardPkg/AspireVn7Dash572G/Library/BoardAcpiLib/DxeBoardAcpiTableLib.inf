@@ -22,10 +22,7 @@
 #
 
 [LibraryClasses]
-  BaseLib
-  IoLib
-  PciLib
-  AslUpdateLib
+  PcdLib
   EcLib
 
 [Packages]

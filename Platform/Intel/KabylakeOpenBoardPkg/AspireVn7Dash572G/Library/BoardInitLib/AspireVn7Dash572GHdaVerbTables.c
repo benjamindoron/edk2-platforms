@@ -2,6 +2,7 @@
   HDA Verb table for Acer Aspire VN7-572G
 
 Copyright (c) 2017, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2021, Baruch Binyamin Doron<BR>
 SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
@@ -9,7 +10,7 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #ifndef _ASPIRE_VN7_572G_HDA_VERB_TABLES_H_
 #define _ASPIRE_VN7_572G_HDA_VERB_TABLES_H_
 
-#include <Ppi/SiPolicy.h>
+#include <PchPolicyCommon.h>
 
 HDAUDIO_VERB_TABLE HdaVerbTableAlc255AspireVn7Dash572G = HDAUDIO_VERB_TABLE_INIT (
   //
