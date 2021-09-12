@@ -1,0 +1,29 @@
+/** @file
+  String definitions for Aspire VN7-572G board configuration form.
+
+Copyright (c) 2015 - 2018, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2021, Baruch Binyamin Doron
+SPDX-License-Identifier: BSD-2-Clause-Patent
+
+**/
+
+#langdef en-US "English"
+
+#string STR_BOARD_TITLE                            #language en-US "Board Configuration"
+#string STR_BOARD_HELP                             #language en-US "Press <Enter> to select board Setup options."
+
+#string STR_BOARD_LOCK_DOWN_BIOS_LOCK              #language en-US "BIOS Lock"
+#string STR_BOARD_LOCK_DOWN_BIOS_LOCK_HELP         #language en-US "Enable SPI flash lockdown\n"
+                                                               "Disable this option to flash the BIOS image.\n"
+                                                               "For security purposes, this option should be enabled."
+#string STR_BOARD_LOCK_DOWN_PMC_READ_DISABLE       #language en-US "PMC XRAM read disable"
+#string STR_BOARD_LOCK_DOWN_PMC_READ_DISABLE_HELP  #language en-US "Disable PMC XRAM read\n"
+                                                               "Disable this option to permit OS drivers to retrieve data from the PMC.\n"
+                                                               "This may have security impact."
+
+#string STR_RESET_DEFAULTS_PROMPT_RESET            #language en-US "Reset to defaults"
+#string STR_RESET_DEFAULTS_PROMPT_RESET_HELP       #language en-US "This will reset the configuration entries to their default values"
+#string STR_SAVE_EXIT                              #language en-US "Commit Changes and Exit"
+#string STR_DISCARD_EXIT                           #language en-US "Discard Changes and Exit"
+
+#string STR_NULL                                   #language en-US ""

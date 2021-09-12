@@ -1,0 +1,68 @@
+/** @file
+  VFR file used by Aspire VN7-572G board configuration component.
+
+Copyright (c) 2015 - 2018, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2021, Baruch Binyamin Doron
+SPDX-License-Identifier: BSD-2-Clause-Patent
+
+**/
+
+#include <Guid/HiiPlatformSetupFormset.h>
+#include <BoardConfigNvData.h>
+
+formset
+  guid       = BOARD_CONFIG_FORMSET_GUID,
+  title      = STRING_TOKEN(STR_BOARD_TITLE),
+  help       = STRING_TOKEN(STR_BOARD_HELP),
+  classguid  = EFI_HII_PLATFORM_SETUP_FORMSET_GUID,
+
+  efivarstore BOARD_CONFIGURATION,
+    varid      = BOARD_CONFIGURATION_VARSTORE_ID,
+    attribute  = 0x03,  // VARIABLE_ATTRIBUTE_NV_BS
+    name       = BoardSetup,
+    guid       = BOARD_CONFIG_FORMSET_GUID;
+
+  form formid = BOARD_CONFIGURATION_FORM_ID,
+    title = STRING_TOKEN(STR_BOARD_TITLE);
+
+    subtitle text = STRING_TOKEN(STR_NULL);
+
+    checkbox varid = BoardSetup.LockDownBiosLock,
+            questionid  = BOARD_LOCK_DOWN_BIOS_LOCK,
+            prompt      = STRING_TOKEN(STR_BOARD_LOCK_DOWN_BIOS_LOCK),
+            help        = STRING_TOKEN(STR_BOARD_LOCK_DOWN_BIOS_LOCK_HELP),
+            flags       = RESET_REQUIRED,
+            default     = 1,
+    endcheckbox;
+
+    checkbox varid = BoardSetup.LockDownPmcReadDisable,
+            questionid  = BOARD_LOCK_DOWN_PMC_READ_DISABLE,
+            prompt      = STRING_TOKEN(STR_BOARD_LOCK_DOWN_PMC_READ_DISABLE),
+            help        = STRING_TOKEN(STR_BOARD_LOCK_DOWN_PMC_READ_DISABLE_HELP),
+            flags       = RESET_REQUIRED,
+            default     = 1,
+    endcheckbox;
+
+#if 0
+    resetbutton
+            defaultstore  = BoardConfig,
+            prompt        = STRING_TOKEN(STR_RESET_DEFAULTS_PROMPT_RESET),
+            help          = STRING_TOKEN(STR_RESET_DEFAULTS_PROMPT_RESET_HELP),
+    endresetbutton;
+#endif
+
+    text
+            help    = STRING_TOKEN(STR_SAVE_EXIT),
+            text    = STRING_TOKEN(STR_SAVE_EXIT),
+            flags   = INTERACTIVE,
+            key     = QUESTION_SAVE_EXIT;
+
+    text
+            help    = STRING_TOKEN(STR_DISCARD_EXIT),
+            text    = STRING_TOKEN(STR_DISCARD_EXIT),
+            flags   = INTERACTIVE,
+            key     = QUESTION_DISCARD_EXIT;
+
+  endform;
+
+endformset;

@@ -7,13 +7,10 @@
 
 **/
 
-#include <PiDxe.h>
+#include "DxeBoardInitLib.h"
 #include <Library/BoardEcLib.h>
 #include <Library/BoardInitLib.h>
-#include <Library/DebugLib.h>
 #include <Library/EcLib.h>
-#include <Library/UefiBootServicesTableLib.h>
-#include <Library/UefiRuntimeServicesTableLib.h>
 #include <Protocol/ResetNotification.h>
 
 EFI_RESET_NOTIFICATION_PROTOCOL  *mResetNotify = NULL;
@@ -131,6 +128,12 @@ EcResetSystemHook (
   }
 }
 
+VOID
+EFIAPI
+InstallBoardConfigHiiForm (
+  VOID
+  );
+
 /**
   A hook for board-specific initialization after PCI enumeration.
 
@@ -159,6 +162,8 @@ BoardInitAfterPciEnumeration (
     DEBUG ((DEBUG_INFO, "EC: Added callback to notify EC of resets\n"));
   }
 
+  InstallBoardConfigHiiForm ();
+
   DEBUG ((DEBUG_INFO, "%a() Ends\n", __FUNCTION__));
   return EFI_SUCCESS;
 }
@@ -177,6 +182,12 @@ BoardInitReadyToBoot (
 {
   return EFI_SUCCESS;
 }
+
+VOID
+EFIAPI
+UninstallBoardConfigHiiForm (
+  VOID
+  );
 
 /**
   A hook for board-specific functionality for the ExitBootServices event.
@@ -200,6 +211,8 @@ BoardInitEndOfFirmware (
     ASSERT_EFI_ERROR (Status);
     DEBUG ((DEBUG_INFO, "EC: Removed callback to notify EC of resets\n"));
   }
+
+  UninstallBoardConfigHiiForm ();
 
   DEBUG ((DEBUG_INFO, "%a() Ends\n", __FUNCTION__));
   return EFI_SUCCESS;

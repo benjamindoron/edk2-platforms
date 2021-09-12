@@ -75,6 +75,7 @@
   SiPolicyLib
   MemoryAllocationLib
   PeiLib
+  PeiServicesLib
 
 [Pcd]
   gSiPkgTokenSpaceGuid.PcdTsegSize                              ## CONSUMES
@@ -135,10 +136,14 @@
   gIntelFsp2WrapperTokenSpaceGuid.PcdFspmUpdDataAddress
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdRootPort4ClkInfo
 
+[Ppis]
+  gEfiPeiReadOnlyVariable2PpiGuid               ## CONSUMES
+
 [Guids]
   gFspNvsBufferVariableGuid                     ## CONSUMES
   gTianoLogoGuid                                ## CONSUMES
   gEfiMemoryOverwriteControlDataGuid
 
 [Depex]
-  gEdkiiVTdInfoPpiGuid
+  gEdkiiVTdInfoPpiGuid AND
+  gEfiPeiReadOnlyVariable2PpiGuid

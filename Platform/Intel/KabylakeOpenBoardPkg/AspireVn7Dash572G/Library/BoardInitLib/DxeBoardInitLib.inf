@@ -17,17 +17,27 @@
 [LibraryClasses]
   UefiBootServicesTableLib
   UefiRuntimeServicesTableLib
+  BaseMemoryLib
   DebugLib
   EcLib
   BoardEcLib
+  HiiLib
+  MemoryAllocationLib
+  UefiHiiServicesLib
 
 [Packages]
   MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
   MinPlatformPkg/MinPlatformPkg.dec
   KabylakeOpenBoardPkg/OpenBoardPkg.dec
 
 [Sources]
   DxeBoardInitLib.c
+  DxeBoardConfigHii.c
+  BoardConfigVfr.vfr
+  BoardConfigVfrStrings.uni
 
 [Protocols]
   gEfiResetNotificationProtocolGuid  ## CONSUMES
+  gEfiDevicePathProtocolGuid         ## PRODUCES
+  gEfiHiiConfigAccessProtocolGuid    ## PRODUCES

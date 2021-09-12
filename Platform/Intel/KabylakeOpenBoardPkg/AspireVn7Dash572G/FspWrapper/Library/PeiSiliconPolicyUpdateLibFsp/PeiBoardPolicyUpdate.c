@@ -6,11 +6,13 @@
 
 **/
 
+#include "PeiSaPolicyUpdate.h"
 #include "PeiPchPolicyUpdate.h"
 #include <Library/BaseMemoryLib.h>
-#include <Library/DebugLib.h>
 #include <Library/PcdLib.h>
-#include <PchPolicyCommon.h>
+#include <Library/PeiServicesLib.h>
+#include <Ppi/ReadOnlyVariable2.h>
+#include <BoardConfigNvData.h>
 
 /*
  * TODO:
@@ -54,8 +56,6 @@ PeiFspBoardPolicyUpdatePreMem (
   DEBUG ((DEBUG_INFO, "%a() Start\n", __FUNCTION__));
 
   // BUGBUG: Preserve FSP defaults - PeiSiliconPolicyInitLibFsp ultimately overrides to 0.
-  // Drop when https://edk2.groups.io/g/devel/message/79391 is merged
-  FspmUpd->FspmConfig.PeciC10Reset = 1;
   FspmUpd->FspmConfig.RefClk = 1;  // Maybe "auto" is safe, but that isn't the FSP default
 
   // TODO: Why should this be here?
@@ -92,18 +92,43 @@ PeiFspBoardPolicyUpdate (
   IN OUT FSPS_UPD    *FspsUpd
   )
 {
-  INTN  Index;
+  EFI_STATUS                       Status;
+  EFI_PEI_READ_ONLY_VARIABLE2_PPI  *VariablePpi;
+  UINTN                            DataSize;
+  EFI_GUID                         BoardConfigFormsetGuid = BOARD_CONFIG_FORMSET_GUID;
+  BOARD_CONFIGURATION              BoardConfig;
+  INTN                             Index;
 
   DEBUG ((DEBUG_INFO, "%a() Start\n", __FUNCTION__));
 
-  // FIXME/NB: This is insecure and not production-ready!
-  // TODO: Configure SPI lockdown by variable on FrontPage?
-  // - Later, also configure stronger protection: PRRs
-  FspsUpd->FspsConfig.PchLockDownBiosLock = 0;  // Default. Will enable, not remove
-  FspsUpd->FspsConfig.PchLockDownSpiEiss = 0;
-  // This may be PWRM+0x18[BIT22], causing HSTI "PCH Security Configuration -  Reserved Check failure"
-  // I think the intel_pmc_core kernel module requires this to populate debugfs?
-  FspsUpd->FspsTestConfig.PchPmPmcReadDisable = 0;
+  // Use variable services directly, to avoid casting reference to pointer into struct
+  // from PeiGetVariable()
+  Status = PeiServicesLocatePpi (&gEfiPeiReadOnlyVariable2PpiGuid, 0, NULL, (VOID **) &VariablePpi);
+  ASSERT_EFI_ERROR (Status);
+
+  DataSize = sizeof (BoardConfig);
+  Status = VariablePpi->GetVariable (
+                          VariablePpi,
+                          BOARD_CONFIG_NV_NAME,
+                          &BoardConfigFormsetGuid,
+                          NULL,
+                          &DataSize,
+                          &BoardConfig
+                          );
+  // TODO: Also configure stronger protection: PRRs
+  // - Also, we could lift lockdown here for BOOT_ON_FLASH_UPDATE.
+  //   User must do this themselves for flashrom
+  if (!EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_INFO, "BoardConfig: Set FSP UPDs from variable\n"));
+    FspsUpd->FspsConfig.PchLockDownBiosLock = BoardConfig.LockDownBiosLock;
+    FspsUpd->FspsConfig.PchLockDownSpiEiss = BoardConfig.LockDownBiosLock;
+    FspsUpd->FspsTestConfig.PchPmPmcReadDisable = BoardConfig.LockDownPmcReadDisable;
+  } else {
+    DEBUG ((DEBUG_INFO, "BoardConfig: Set FSP UPDs to secure default\n"));
+    FspsUpd->FspsConfig.PchLockDownBiosLock = 1;  // FSP default not secure
+    FspsUpd->FspsConfig.PchLockDownSpiEiss = 1;
+    FspsUpd->FspsTestConfig.PchPmPmcReadDisable = 1;
+  }
 
   // BUGBUG: Preserve FSP defaults - Pei*PolicyLib ultimately overrides
   // Requires HW support?
@@ -116,7 +141,7 @@ PeiFspBoardPolicyUpdate (
   FspsUpd->FspsConfig.SerialIoDevMode[0] = 2;
   FspsUpd->FspsConfig.SerialIoDevMode[1] = 2;
 
-  // Acer IDs (TODO: "Newgate" IDs)
+  // Acer IDs (TODO: "Newgate" and "RayleighSLS" IDs)
   FspsUpd->FspsConfig.DefaultSvid = 0x1025;
   FspsUpd->FspsConfig.DefaultSid = 0x1037;
   FspsUpd->FspsConfig.PchSubSystemVendorId = 0x1025;
@@ -265,7 +290,7 @@ PeiFspBoardPolicyUpdate (
   FspsUpd->FspsConfig.PcieRpAspm[9] = PchPcieAspmL1;
 
   /* SCS config */
-  // Although platform NVS area shows this enabled, the SD card reader is connected over USB, not SCS
+  // Although vendor's platform NVS area shows this is enabled, the SD card reader is connected over USB, not SCS
   FspsUpd->FspsConfig.ScsEmmcEnabled = 0;
   FspsUpd->FspsConfig.ScsSdCardEnabled = 0;
 
@@ -275,7 +300,6 @@ PeiFspBoardPolicyUpdate (
   FspsUpd->FspsConfig.PchSirqMode = PchContinuousMode;
 
   /* HDA config */
-  // FIXME: DspEnable is set, per PeiPchPolicyLib, however it is disabled in the HOB produced by FSP
   // Returned to DXE as HOB, used to select blob for NHLT
   // - FIXME: 1ch array DMIC may not be supported by the Linux driver
   FspsUpd->FspsConfig.PchHdaDspEndpointDmic = PchHdaDmic1chArray;
