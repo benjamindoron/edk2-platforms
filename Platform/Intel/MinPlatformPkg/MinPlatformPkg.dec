@@ -121,19 +121,19 @@
   gMinPlatformPkgTokenSpaceGuid.PcdAcpiPm2ControlBlockAddress|0x1850|UINT16|0x00010039
   gMinPlatformPkgTokenSpaceGuid.PcdAcpiPmTimerBlockAddress|0x1808|UINT16|0x0001003A
   gMinPlatformPkgTokenSpaceGuid.PcdAcpiGpe0BlockAddress|0x1880|UINT16|0x0001003B
-  gMinPlatformPkgTokenSpaceGuid.PcdAcpiGpe0BlockLength|0x00|UINT8|0x0001003C
+  gMinPlatformPkgTokenSpaceGuid.PcdAcpiGpe0BlockLength|0x20|UINT8|0x0001003C
   gMinPlatformPkgTokenSpaceGuid.PcdAcpiGpe1BlockAddress|0x0000|UINT16|0x0001003D
   gMinPlatformPkgTokenSpaceGuid.PcdAcpiGpe1BlockLength|0x00|UINT8|0x0001003E
   gMinPlatformPkgTokenSpaceGuid.PcdAcpiGpe1Base|0x00|UINT8|0x00010040
   gMinPlatformPkgTokenSpaceGuid.PcdAcpiResetRegisterAccessSize|0x00|UINT8|0x00010042
 
-  gMinPlatformPkgTokenSpaceGuid.PcdAcpiXPm1aEvtBlkAccessSize|0x00|UINT8|0x00010043
+  gMinPlatformPkgTokenSpaceGuid.PcdAcpiXPm1aEvtBlkAccessSize|0x02|UINT8|0x00010043
   gMinPlatformPkgTokenSpaceGuid.PcdAcpiXPm1bEvtBlkAccessSize|0x00|UINT8|0x00010044
-  gMinPlatformPkgTokenSpaceGuid.PcdAcpiXPm1aCntBlkAccessSize|0x00|UINT8|0x00010045
+  gMinPlatformPkgTokenSpaceGuid.PcdAcpiXPm1aCntBlkAccessSize|0x02|UINT8|0x00010045
   gMinPlatformPkgTokenSpaceGuid.PcdAcpiXPm1bCntBlkAccessSize|0x00|UINT8|0x00010046
   gMinPlatformPkgTokenSpaceGuid.PcdAcpiXPm2CntBlkAccessSize|0x00|UINT8|0x00010047
-  gMinPlatformPkgTokenSpaceGuid.PcdAcpiXPmTmrBlkAccessSize|0x00|UINT8|0x00010048
-  gMinPlatformPkgTokenSpaceGuid.PcdAcpiXGpe0BlkAccessSize|0x00|UINT8|0x00010049
+  gMinPlatformPkgTokenSpaceGuid.PcdAcpiXPmTmrBlkAccessSize|0x03|UINT8|0x00010048
+  gMinPlatformPkgTokenSpaceGuid.PcdAcpiXGpe0BlkAccessSize|0x01|UINT8|0x00010049
   gMinPlatformPkgTokenSpaceGuid.PcdAcpiXGpe1BlkAccessSize|0x00|UINT8|0x0001004A
   gMinPlatformPkgTokenSpaceGuid.PcdAcpiXGpe1BlkRegisterBitWidth|0x00|UINT8|0x00010056
   gMinPlatformPkgTokenSpaceGuid.PcdAcpiS4BiosReq|0x0000|UINT8|0x00010055
