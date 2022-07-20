@@ -23,7 +23,6 @@
   #
   DEFINE BIOS_SIZE_OPTION = SIZE_120
 
-[Defines]
   PLATFORM_NAME                         = $(PLATFORM_BOARD_PACKAGE)
   PLATFORM_GUID                         = 465B0A0B-7AC1-443b-8F67-7B8DEC145F90
   PLATFORM_VERSION                      = 0.1
@@ -39,7 +38,10 @@
   #
   # Include PCD configuration for this board.
   #
+  !include AdvancedFeaturePkg/Include/AdvancedFeaturesPcd.dsc
+
   !include OpenBoardPkgPcd.dsc
+  !include AdvancedFeaturePkg/Include/AdvancedFeatures.dsc
 
 ################################################################################
 #
