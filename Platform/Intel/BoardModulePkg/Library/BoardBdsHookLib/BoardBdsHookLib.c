@@ -9,6 +9,7 @@
 
 #include <Guid/EventGroup.h>
 
+#include <Library/BootLogoLib.h>
 #include <Library/IoLib.h>
 #include <Library/PciLib.h>
 #include <Library/UefiBootManagerLib.h>
@@ -1384,8 +1385,6 @@ BdsAfterConsoleReadyBeforeBootOptionCallback (
 
       break;
   }
-
-  Print (L"Press F2 for Setup, or F7 for BootMenu!\n");
 
 
 }

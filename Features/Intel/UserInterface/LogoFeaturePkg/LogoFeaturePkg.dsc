@@ -29,8 +29,6 @@
   LogoFeaturePkg/LogoFeaturePkg.dec
 
 [PcdsFeatureFlag]
-  gLogoFeaturePkgTokenSpaceGuid.PcdJpgEnable                              |FALSE
-
 #
 # MinPlatform common include for required feature PCD
 # These PCD must be set before the core include files, CoreCommonLib,
@@ -55,5 +53,4 @@
 # all drivers in this package in 32b or 64b modes
 #
 [Components]
-  LogoFeaturePkg/LogoDxe/JpegLogoDxe.inf
   LogoFeaturePkg/LogoDxe/LogoDxe.inf

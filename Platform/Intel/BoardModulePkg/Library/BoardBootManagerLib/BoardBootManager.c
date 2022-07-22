@@ -11,9 +11,12 @@
 #include <Library/PlatformBootManagerLib.h>
 #include <Library/UefiLib.h>
 #include <Library/HobLib.h>
+#include <Library/PcdLib.h>
 #include <Library/PrintLib.h>
 #include <Library/PerformanceLib.h>
 #include <Library/BoardBootManagerLib.h>
+#include <Library/BootLogoLib.h>
+#include <Protocol/GraphicsOutput.h>
 
 
 BOOLEAN    mHotKeypressed = FALSE;
@@ -31,10 +34,38 @@ BoardBootManagerWaitCallback (
   UINT16          TimeoutRemain
   )
 {
+  EFI_GRAPHICS_OUTPUT_BLT_PIXEL_UNION  Black;
+  EFI_GRAPHICS_OUTPUT_BLT_PIXEL_UNION  White;
+  UINT16                               TimeoutInitial;
   EFI_STATUS                    Status;
   EFI_SIMPLE_TEXT_INPUT_EX_PROTOCOL  *TxtInEx;
   EFI_KEY_DATA                  KeyData;
   BOOLEAN                       PausePressed;
+
+  // Give user the notification, then consider being paused state.
+  TimeoutInitial = PcdGet16 (PcdPlatformBootTimeOut);
+
+  //
+  // If PcdPlatformBootTimeOut is set to zero, then we consider
+  // that no progress update should be enacted (since we'd only
+  // ever display a one-shot progress of either 0% or 100%).
+  //
+  if (TimeoutInitial == 0) {
+    return;
+  }
+
+  Black.Raw = 0x00000000;
+  White.Raw = 0x00FFFFFF;
+
+  // Show progress at bottom center
+  BootLogoUpdateProgress (
+    White.Pixel,
+    Black.Pixel,
+    L"Press F2 for Setup, or F7 for BootMenu!\n",
+    White.Pixel,
+    (TimeoutInitial - TimeoutRemain) * 100 / TimeoutInitial,
+    0
+    );
 
   //
   // Pause on PAUSE key

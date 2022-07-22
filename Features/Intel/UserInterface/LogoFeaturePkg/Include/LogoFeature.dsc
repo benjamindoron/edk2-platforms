@@ -47,8 +47,4 @@
 # @todo: Change below line to [Components.$(DXE_ARCH)] after https://bugzilla.tianocore.org/show_bug.cgi?id=2308
 #        is completed.
 [Components.X64]
-  !if gLogoFeaturePkgTokenSpaceGuid.PcdJpgEnable == TRUE
-    LogoFeaturePkg/LogoDxe/JpegLogoDxe.inf
-  !else
-    LogoFeaturePkg/LogoDxe/LogoDxe.inf
-  !endif
+  LogoFeaturePkg/LogoDxe/LogoDxe.inf

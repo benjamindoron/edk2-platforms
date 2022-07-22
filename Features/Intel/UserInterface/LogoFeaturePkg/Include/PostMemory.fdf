@@ -6,8 +6,4 @@
 # SPDX-License-Identifier: BSD-2-Clause-Patent
 #
 ##
-!if gLogoFeaturePkgTokenSpaceGuid.PcdJpgEnable == TRUE
-  INF LogoFeaturePkg/LogoDxe/JpegLogoDxe.inf
-!else
-  INF LogoFeaturePkg/LogoDxe/LogoDxe.inf
-!endif
+INF LogoFeaturePkg/LogoDxe/LogoDxe.inf

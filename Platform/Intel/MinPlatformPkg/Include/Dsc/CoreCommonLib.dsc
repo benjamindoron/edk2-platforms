@@ -84,6 +84,7 @@
   CapsuleLib|MdeModulePkg/Library/DxeCapsuleLibNull/DxeCapsuleLibNull.inf
 
   UefiBootManagerLib|MdeModulePkg/Library/UefiBootManagerLib/UefiBootManagerLib.inf
+  BootLogoLib|MdeModulePkg/Library/BootLogoLib/BootLogoLib.inf
   FileExplorerLib|MdeModulePkg/Library/FileExplorerLib/FileExplorerLib.inf
   SynchronizationLib|MdePkg/Library/BaseSynchronizationLib/BaseSynchronizationLib.inf
   SecurityManagementLib|MdeModulePkg/Library/DxeSecurityManagementLib/DxeSecurityManagementLib.inf

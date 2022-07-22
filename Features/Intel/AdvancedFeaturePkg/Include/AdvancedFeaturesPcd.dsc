@@ -86,11 +86,3 @@
   gVirtualKeyboardFeaturePkgTokenSpaceGuid.PcdVirtualKeyboardFeatureEnable  |FALSE
 
   gPlatformPayloadFeaturePkgTokenSpaceGuid.PcdPlatformPayloadFeatureEnable  |FALSE
-
-#
-# There seems to be some build parsing odd behavior that requires this PCD to be specified even though
-# the *.fdf that consumes it is dependent on the feature flag.
-# This section is to ensure that boards have these PCD instantiated.
-#
-[PcdsFeatureFlag]
-  gLogoFeaturePkgTokenSpaceGuid.PcdJpgEnable                              |FALSE

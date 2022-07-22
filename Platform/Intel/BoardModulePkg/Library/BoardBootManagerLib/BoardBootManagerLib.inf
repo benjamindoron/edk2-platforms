@@ -30,10 +30,15 @@
   DebugLib
   UefiLib
   HobLib
+  PcdLib
   UefiBootManagerLib
   TimerLib
+  BootLogoLib
 
 [Packages]
   MdePkg/MdePkg.dec
   MdeModulePkg/MdeModulePkg.dec
   MinPlatformPkg/MinPlatformPkg.dec
+
+[Pcd]
+  gEfiMdePkgTokenSpaceGuid.PcdPlatformBootTimeOut
