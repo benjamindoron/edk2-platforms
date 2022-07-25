@@ -1,6 +1,7 @@
 /** @file
 
 Copyright (c) 2017 - 2021, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2021, Baruch Binyamin Doron<BR>
 SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
@@ -10,14 +11,14 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #include <Library/BoardEcLib.h>
 #include <Library/DebugLib.h>
 
-#define ADC_3V_10BIT_GRANULARITY_MAX  (3005/1023)
+#define ADC_3V_10BIT_GRANULARITY_MAX  (3005 / 1023)
 #define PCB_VER_AD                    1
 #define MODEL_ID_AD                   3
 
 /**
-  Get Aspire V Nitro (Skylake) board ID.
-  There are 2 different boards having different ID.
-  This function will return board ID to caller.
+  Get Aspire V Nitro (Skylake) board ID. There are 3 different boards
+  having different PCH (therefore, ID). This function will return board ID to caller.
+  - TODO/NB: Detection is still unreliable. Likely must await interrupt.
 
   @param[out] DataBuffer
 
@@ -32,34 +33,42 @@ GetAspireVn7Dash572GBoardId (
   UINT16        DataBuffer;
 
   ReadEcAdcConverter (MODEL_ID_AD, &DataBuffer);
-  DEBUG ((DEBUG_INFO, "BoardId (raw) = 0x%X\n", DataBuffer));
+  DEBUG ((DEBUG_INFO, "BoardId (raw) = %d\n", DataBuffer));
   // Board by max millivoltage range (of 10-bit, 3.005 V ADC)
-  if (DataBuffer <= (1374/ADC_3V_10BIT_GRANULARITY_MAX)) {
+  if (DataBuffer <= (1374 / ADC_3V_10BIT_GRANULARITY_MAX)) {
     // Consider returning an error
     DEBUG ((DEBUG_ERROR, "BoardId is reserved?\n"));
-  } else if (DataBuffer <= (2017/ADC_3V_10BIT_GRANULARITY_MAX)) {
-    *BoardId = BoardIdNewgateSLx_dGPU;
+    *BoardId = 0;
+  } else if (DataBuffer <= (2017 / ADC_3V_10BIT_GRANULARITY_MAX)) {
+    *BoardId = BoardIdNewgateSLS_dGPU;
+  } else if (DataBuffer <= (2259 / ADC_3V_10BIT_GRANULARITY_MAX)) {
+    *BoardId = BoardIdRayleighSLS_960M;
   } else {
-    *BoardId = BoardIdRayleighSLx_dGPU;
+    *BoardId = BoardIdRayleighSL_dGPU;
   }
   DEBUG ((DEBUG_INFO, "BoardId = 0x%X\n", *BoardId));
 
   ReadEcAdcConverter (PCB_VER_AD, &DataBuffer);
-  DEBUG ((DEBUG_INFO, "PCB version (raw) = 0x%X\n", DataBuffer));
+  DEBUG ((DEBUG_INFO, "PCB version (raw) = %d\n", DataBuffer));
   DEBUG ((DEBUG_INFO, "PCB version: "));
   // PCB by max millivoltage range (of 10-bit, 3.005 V ADC)
-  if (DataBuffer <= (2017/ADC_3V_10BIT_GRANULARITY_MAX)) {
+  if (DataBuffer <= (2017 / ADC_3V_10BIT_GRANULARITY_MAX)) {
     // Consider returning an error
     DEBUG ((DEBUG_ERROR, "Reserved?\n"));
-  } else if (DataBuffer <= (2259/ADC_3V_10BIT_GRANULARITY_MAX)) {
-    DEBUG ((DEBUG_ERROR, "-1\n"));
-  } else if (DataBuffer <= (2493/ADC_3V_10BIT_GRANULARITY_MAX)) {
-    DEBUG ((DEBUG_ERROR, "SC\n"));
-  } else if (DataBuffer <= (2759/ADC_3V_10BIT_GRANULARITY_MAX)) {
-    DEBUG ((DEBUG_ERROR, "SB\n"));
+  } else if (DataBuffer <= (2259 / ADC_3V_10BIT_GRANULARITY_MAX)) {
+    DEBUG ((DEBUG_INFO, "-1\n"));
+  } else if (DataBuffer <= (2493 / ADC_3V_10BIT_GRANULARITY_MAX)) {
+    DEBUG ((DEBUG_INFO, "SC\n"));
+  } else if (DataBuffer <= (2759 / ADC_3V_10BIT_GRANULARITY_MAX)) {
+    DEBUG ((DEBUG_INFO, "SB\n"));
   } else {
-    DEBUG ((DEBUG_ERROR, "SA\n"));
+    DEBUG ((DEBUG_INFO, "SA\n"));
   }
+
+  // FIXME
+  DEBUG ((DEBUG_WARN, "OVERRIDE: Detection is unreliable and other boards unsupported!\n"));
+  DEBUG ((DEBUG_INFO, "Setting board SKU to Rayleigh-SL\n"));
+  *BoardId = BoardIdRayleighSL_dGPU;
 }
 
 EFI_STATUS
@@ -76,7 +85,7 @@ AspireVn7Dash572GBoardDetect (
 
   DEBUG ((DEBUG_INFO, "AspireVn7Dash572GDetectionCallback\n"));
   GetAspireVn7Dash572GBoardId (&BoardId);
-  if (BoardId == BoardIdNewgateSLx_dGPU || BoardId == BoardIdRayleighSLx_dGPU) {
+  if (BoardId == BoardIdNewgateSLS_dGPU || BoardId == BoardIdRayleighSLS_960M || BoardId == BoardIdRayleighSL_dGPU) {
     LibPcdSetSku (BoardId);
     ASSERT (LibPcdGetSku() == BoardId);
   } else {

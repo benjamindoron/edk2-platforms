@@ -82,8 +82,9 @@ EcIdxWrite (
   );
 
 /**
-  Read EC analog-digital converter.
-  TODO: Check if ADC is valid.
+  Read an analog-digital converter from the EC.
+  TODO: There are actually 8 ADCs, but those can remain unused.
+  - Handling port enable bits and pin IE could get complicated.
 
   @param[in]  Adc
   @param[out] DataBuffer

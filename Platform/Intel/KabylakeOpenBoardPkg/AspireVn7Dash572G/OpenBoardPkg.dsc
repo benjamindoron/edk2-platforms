@@ -88,8 +88,9 @@
 [SkuIds]
   0x00|DEFAULT                # 0|DEFAULT is reserved and always required.
   # For further details on specific SKUs (which dGPU installed), see EC page of schematics
-  0x41|RayleighSLx_dGPU       # Detect the UMA board by GPIO
-  0x42|NewgateSLx_dGPU
+  0x41|NewgateSLS_dGPU
+  0x42|RayleighSLS_960M
+  0x43|RayleighSL_dGPU        # Detect the UMA board by GPIO
 
 ################################################################################
 #

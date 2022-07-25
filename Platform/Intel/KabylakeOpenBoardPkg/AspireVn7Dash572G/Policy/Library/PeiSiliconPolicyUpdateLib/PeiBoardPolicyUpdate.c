@@ -175,7 +175,7 @@ PeiFspBoardPolicyUpdate (
   //       that it does - this appears to be static text?) and is UART0 merely supporting
   //       the UART2 devfn?
 
-  // Acer IDs (TODO: "Newgate" IDs)
+  // Acer IDs (TODO: "Newgate" and "RayleighSLS" IDs)
 //FIXME  FspsUpd->FspsConfig.DefaultSvid = 0x1025;
 //FIXME  FspsUpd->FspsConfig.DefaultSid = 0x1037;
   PchGeneralConfig->SubSystemVendorId = 0x1025;

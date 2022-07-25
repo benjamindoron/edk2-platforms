@@ -9,9 +9,11 @@
 
 #include <Base.h>
 #include <Uefi.h>
+#include <Library/BoardEcLib.h>
 #include <Library/DebugLib.h>
 #include <Library/EcLib.h>
 #include <Library/IoLib.h>
+#include <Library/TimerLib.h>
 
 /*
  * Notes:
@@ -193,8 +195,9 @@ EcIdxWrite (
 }
 
 /**
-  Read EC analog-digital converter.
-  TODO: Check if ADC is valid.
+  Read an analog-digital converter from the EC.
+  TODO: There are actually 8 ADCs, but those can remain unused.
+  - Handling port enable bits and pin IE could get complicated.
 
   @param[in]  Adc
   @param[out] DataBuffer
@@ -205,23 +208,36 @@ ReadEcAdcConverter (
   OUT UINT16       *DataBuffer
   )
 {
-  UINT8            AdcConvertersEnabled;  // Contains some ADCs and some DACs
+  UINT8            LowAdcsEnabled;  // Contains some ADCs and some DACs
   UINT8            IdxData;
 
   if (DataBuffer == NULL) {
     return;
   }
 
+  if (Adc >= 4) {
+    DEBUG ((DEBUG_ERROR, "Handling ADC%d is unsupported!\n", Adc));
+    return;
+  }
+
   // Backup enabled ADCs
-  EcIdxRead (0xff15, &AdcConvertersEnabled);  // ADDAEN
+  EcIdxRead (0xff15, &LowAdcsEnabled);   // ADDAEN
 
-  // Enable desired ADC in bitmask (not enabled by EC FW, not used by vendor FW)
-  EcIdxWrite (0xff15, AdcConvertersEnabled | ((1 << Adc) & 0xf));  // ADDAEN
+  /* 1. Clear IE of the related pin - ADC0: "GPIOIE38[0] (0xFC67[0]) = 0b" */
+  EcIdxRead (0xfc67, &IdxData);
+  IdxData &= ~(1 << Adc);
+  EcIdxWrite (0xfc67, IdxData);
 
-  // Sample the desired ADC in binary field; OR the start bit
-  EcIdxWrite (0xff18, ((Adc << 1) & 0xf) | 1);  // ADCTRL
+  /* 2. Enable desired ADC function in bitmask */
+  EcIdxWrite (0xff15, (1 << Adc) & 0xf);  // ADDAEN
 
-  // Read the desired ADC
+  /* 3. Enable control of desired ADC in bit field, OR the start bit */
+  EcIdxWrite (0xff18, ((Adc << 1) & 7) | 1);  // ADCTRL
+
+  /* TODO: Await ADC interrupt */
+  MicroSecondDelay (256);  // Wait "Voltage Conversion Time"
+
+  /* 4. Read the desired ADC */
   EcIdxRead (0xff19, &IdxData);  // ADCDAT
   *DataBuffer = (IdxData << 2);
   // Lower 2-bits of 10-bit ADC are in high bits of next register
@@ -229,5 +245,5 @@ ReadEcAdcConverter (
   *DataBuffer |= ((IdxData & 0xc0) >> 6);
 
   // Restore enabled ADCs
-  EcIdxWrite (0xff15, AdcConvertersEnabled);  // ADDAEN
+  EcIdxWrite (0xff15, LowAdcsEnabled);   // ADDAEN
 }

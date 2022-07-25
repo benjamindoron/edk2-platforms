@@ -18,6 +18,7 @@
   DebugLib
   EcLib
   IoLib
+  TimerLib
 
 [Packages]
   MdePkg/MdePkg.dec
