@@ -60,12 +60,10 @@ SiliconPolicyUpdateLate (
   Status = gBS->LocateProtocol (&gGopPolicyProtocolGuid, NULL, (VOID **) &GopPolicy);
   if (!EFI_ERROR (Status)) {
     Status = GopPolicy->GetVbtData (&VbtAddress, &VbtSize);
-    if (!EFI_ERROR (Status) && GraphicsDxeConfig != NULL) {
+    if (!EFI_ERROR (Status)) {
+      DEBUG ((DEBUG_INFO, "Located VBT at 0x%x with size 0x%x\n", VbtAddress, VbtSize));
       GraphicsDxeConfig->VbtAddress = VbtAddress;
       GraphicsDxeConfig->Size = VbtSize;
-      DEBUG ((DEBUG_INFO, "Located VBT at 0x%x with size 0x%x\n", VbtAddress, VbtSize));
-    } else {
-      DEBUG ((DEBUG_ERROR, "No VBT found, or Policy == NULL; Status - %r\n", Status));
     }
   }
 

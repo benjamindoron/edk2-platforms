@@ -23,6 +23,7 @@
 
 [LibraryClasses]
   PcdLib
+  DebugLib
   EcLib
 
 [Packages]

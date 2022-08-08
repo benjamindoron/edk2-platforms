@@ -106,7 +106,7 @@ GpioInitPreMem (
 {
   EFI_STATUS  Status;
 
-  DEBUG ((DEBUG_INFO, "GpioInitPreMem() Start\n"));
+  DEBUG ((DEBUG_INFO, "%a() Start\n", __FUNCTION__));
 
   Status = GpioConfigurePads (mGpioTableAspireVn7Dash572G_earlySize, mGpioTableAspireVn7Dash572G_early);
   if (EFI_ERROR (Status)) {
@@ -114,7 +114,7 @@ GpioInitPreMem (
     return EFI_DEVICE_ERROR;
   }
 
-  DEBUG ((DEBUG_INFO, "GpioInitPreMem() End\n"));
+  DEBUG ((DEBUG_INFO, "%a() End\n", __FUNCTION__));
   return EFI_SUCCESS;
 }
 
@@ -129,7 +129,7 @@ DgpuPowerOn (
 {
   UINT32         OutputVal;
 
-  DEBUG ((DEBUG_INFO, "DgpuPowerOn() Start\n"));
+  DEBUG ((DEBUG_INFO, "%a() Start\n", __FUNCTION__));
 
   GpioGetOutputValue (DGPU_PRESENT, &OutputVal);
   if (!OutputVal) {
@@ -146,7 +146,7 @@ DgpuPowerOn (
     GpioSetOutputValue (DGPU_PWR_EN, 1);    // Deassert dGPU_PWR_EN#
   }
 
-  DEBUG ((DEBUG_INFO, "DgpuPowerOn() End\n"));
+  DEBUG ((DEBUG_INFO, "%a() End\n", __FUNCTION__));
 }
 
 /**
@@ -182,6 +182,8 @@ AspireVn7Dash572GBoardInitBeforeMemoryInit (
 {
   EFI_STATUS    Status;
 
+  DEBUG ((DEBUG_INFO, "%a() Start\n", __FUNCTION__));
+
   Status = GpioInitPreMem ();
   if (!EFI_ERROR (Status)) {
     DgpuPowerOn ();
@@ -206,6 +208,8 @@ AspireVn7Dash572GBoardInitBeforeMemoryInit (
   Status = PchInitializeReset ();
   ASSERT_EFI_ERROR (Status);
 
+  DEBUG ((DEBUG_INFO, "%a() End\n", __FUNCTION__));
+
   return EFI_SUCCESS;
 }
 
@@ -222,6 +226,8 @@ AspireVn7Dash572GBoardInitAfterMemoryInit (
 {
   EFI_STATUS  Status;
 
+  DEBUG ((DEBUG_INFO, "%a() Start\n", __FUNCTION__));
+
   // BUGBUG: Workaround for a misbehaving system firmware not setting goIdle
   // - Based on prior investigation for coreboot, I suspect FSP
   if ((MmioRead32 (0xFED40044) & PTP_CRB_CONTROL_AREA_STATUS_TPM_IDLE) == 0) {
@@ -234,6 +240,8 @@ AspireVn7Dash572GBoardInitAfterMemoryInit (
   if (EFI_ERROR (Status)) {
     DEBUG ((DEBUG_WARN, "Failed to enable LGMR. Were ACPI tables built for LGMR memory map?\n"));
   }
+
+  DEBUG ((DEBUG_INFO, "%a() End\n", __FUNCTION__));
 
   return EFI_SUCCESS;
 }
@@ -250,6 +258,8 @@ AspireVn7Dash572GBoardDebugInit (
   VOID
   )
 {
+  DEBUG ((DEBUG_INFO, "%a() Start\n", __FUNCTION__));
+
   ///
   /// Do Early PCH init
   ///

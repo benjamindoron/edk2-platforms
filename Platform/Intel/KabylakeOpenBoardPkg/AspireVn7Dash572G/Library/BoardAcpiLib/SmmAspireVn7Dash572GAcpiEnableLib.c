@@ -8,7 +8,7 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 **/
 
 #include <Base.h>
-#include <PiDxe.h>
+#include <PiSmm.h>
 #include <Library/DebugLib.h>
 #include <Library/EcLib.h>
 
@@ -19,6 +19,8 @@ AspireVn7Dash572GBoardEnableAcpi (
   )
 {
   EFI_STATUS  Status;
+
+  DEBUG ((DEBUG_INFO, "%a() Start\n", __FUNCTION__));
 
   /* Tests at runtime show this re-enables charging and battery reporting
    * - Obtained from somewhere in vendor's SmmKbcDriver.
@@ -36,6 +38,7 @@ AspireVn7Dash572GBoardEnableAcpi (
   }
 
   /* TODO: Set touchpad GPP owner to ACPI? */
+  DEBUG ((DEBUG_INFO, "%a() End\n", __FUNCTION__));
 
   return EFI_SUCCESS;
 }
@@ -47,6 +50,8 @@ AspireVn7Dash572GBoardDisableAcpi (
   )
 {
   EFI_STATUS  Status;
+
+  DEBUG ((DEBUG_INFO, "%a() Start\n", __FUNCTION__));
 
   /* Tests at runtime show this disables charging and battery reporting
    * - Obtained from somewhere in vendor's SmmKbcDriver.
@@ -64,6 +69,7 @@ AspireVn7Dash572GBoardDisableAcpi (
   }
 
   /* TODO: Set touchpad GPP owner to GPIO? */
+  DEBUG ((DEBUG_INFO, "%a() End\n", __FUNCTION__));
 
   return EFI_SUCCESS;
 }

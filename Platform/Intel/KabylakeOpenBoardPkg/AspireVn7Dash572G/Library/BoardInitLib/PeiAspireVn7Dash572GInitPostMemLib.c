@@ -1,6 +1,7 @@
 /** @file
 
 Copyright (c) 2017 - 2021, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2021, Baruch Binyamin Doron<BR>
 SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
@@ -34,28 +35,32 @@ EcInit (
   VOID
   )
 {
+  EFI_STATUS     Status;
   EFI_BOOT_MODE  BootMode;
-  UINT8          PowerRegister;
+  UINT8          PowerState;
   UINT8          OutData;
   UINT16         ABase;
   UINT16         Pm1Sts;
   UINT32         GpeSts;
 
+  DEBUG ((DEBUG_INFO, "%a() Start\n", __FUNCTION__));
+
   /* This is called via a "$FNC" in a PeiOemModule pointer table, with "$DPX" on SiInit */
   IoWrite8 (0x6C, 0x5A);  // 6Ch is the EC sideband port
-  PeiServicesGetBootMode (&BootMode);
+  Status = PeiServicesGetBootMode (&BootMode);
+  ASSERT_EFI_ERROR (Status);
   if (BootMode == BOOT_ON_S3_RESUME) {
     /* "MLID" in LGMR-based memory map is equivalent to "ELID" in EC-based
      * memory map. Vendor firmware accesses through LGMR; remapped
      * - EcCmd* function calls will not remapped */
-    EcRead (0x70, &PowerRegister);
-    if (!(PowerRegister & BIT1)) {   // Lid is closed
+    EcRead (0x70, &PowerState);
+    if (!(PowerState & BIT1)) {   // Lid is closed
       EcCmd90Read (0x0A, &OutData);
       if (!(OutData & BIT1)) {
         EcCmd91Write (0x0A, OutData | BIT1);
       }
 
-      /* Clear events and go back to sleep */
+      /* Clear below events and go back to sleep */
       PchAcpiBaseGet (&ABase);
       /* Clear ABase PM1_STS - RW/1C set bits */
       Pm1Sts = IoRead16 (ABase + R_PCH_ACPI_PM1_STS);
@@ -78,6 +83,8 @@ EcInit (
       CpuDeadLoop ();
     }
   }
+
+  DEBUG ((DEBUG_INFO, "%a() End\n", __FUNCTION__));
 }
 
 /**
@@ -105,15 +112,15 @@ GpioInitPostMem (
 {
   EFI_STATUS  Status;
 
-  DEBUG ((DEBUG_INFO, "GpioInitPostMem() Start\n"));
+  DEBUG ((DEBUG_INFO, "%a() Start\n", __FUNCTION__));
 
   Status = GpioConfigurePads (mGpioTableAspireVn7Dash572GSize, mGpioTableAspireVn7Dash572G);
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "Failed to configure early GPIOs!\n"));
+    DEBUG ((DEBUG_ERROR, "Failed to configure GPIOs!\n"));
     return EFI_DEVICE_ERROR;
   }
 
-  DEBUG ((DEBUG_INFO, "GpioInitPostMem() End\n"));
+  DEBUG ((DEBUG_INFO, "%a() End\n", __FUNCTION__));
   return EFI_SUCCESS;
 }
 
@@ -128,6 +135,8 @@ AspireVn7Dash572GBoardInitBeforeSiliconInit (
   VOID
   )
 {
+  DEBUG ((DEBUG_INFO, "%a() Start\n", __FUNCTION__));
+
   GpioInitPostMem ();
   AspireVn7Dash572GInit ();
 
@@ -136,6 +145,7 @@ AspireVn7Dash572GBoardInitBeforeSiliconInit (
   ///
   LateSiliconInit ();
 
+  DEBUG ((DEBUG_INFO, "%a() End\n", __FUNCTION__));
   return EFI_SUCCESS;
 }
 
@@ -150,7 +160,10 @@ AspireVn7Dash572GBoardInitAfterSiliconInit (
   VOID
   )
 {
+  DEBUG ((DEBUG_INFO, "%a() Start\n", __FUNCTION__));
+
   EcInit ();
 
+  DEBUG ((DEBUG_INFO, "%a() End\n", __FUNCTION__));
   return EFI_SUCCESS;
 }

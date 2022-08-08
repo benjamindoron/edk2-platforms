@@ -86,6 +86,7 @@ BoardInitBeforeTempRamExit (
   VOID
   )
 {
+  DEBUG ((DEBUG_INFO, "%a()\n", __FUNCTION__));
   return EFI_SUCCESS;
 }
 
@@ -95,5 +96,6 @@ BoardInitAfterTempRamExit (
   VOID
   )
 {
+  DEBUG ((DEBUG_INFO, "%a()\n", __FUNCTION__));
   return EFI_SUCCESS;
 }

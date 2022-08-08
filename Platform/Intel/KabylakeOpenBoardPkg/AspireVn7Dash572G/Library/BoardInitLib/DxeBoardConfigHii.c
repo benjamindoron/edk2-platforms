@@ -261,7 +261,7 @@ InstallBoardConfigHiiForm (
   UINTN                DataSize;
   BOOLEAN              ActionFlag;
 
-  DEBUG ((DEBUG_INFO, "%a() Starts\n", __FUNCTION__));
+  DEBUG ((DEBUG_INFO, "%a() Start\n", __FUNCTION__));
 
   //
   // Install Device Path and Config Access protocols to driver handle
@@ -335,7 +335,7 @@ InstallBoardConfigHiiForm (
 
   FreePool (ConfigRequestHdr);
 
-  DEBUG ((DEBUG_INFO, "%a() Ends\n", __FUNCTION__));
+  DEBUG ((DEBUG_INFO, "%a() End\n", __FUNCTION__));
 }
 
 /**
@@ -350,7 +350,7 @@ UninstallBoardConfigHiiForm (
 {
   EFI_STATUS           Status;
 
-  DEBUG ((DEBUG_INFO, "%a() Starts\n", __FUNCTION__));
+  DEBUG ((DEBUG_INFO, "%a() Start\n", __FUNCTION__));
 
   //
   // Uninstall Device Path and Config Access protocols
@@ -370,5 +370,5 @@ UninstallBoardConfigHiiForm (
   //
   HiiRemovePackages (gBoardConfigPrivate.HiiHandle);
 
-  DEBUG ((DEBUG_INFO, "%a() Ends\n", __FUNCTION__));
+  DEBUG ((DEBUG_INFO, "%a() End\n", __FUNCTION__));
 }

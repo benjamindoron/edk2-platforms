@@ -1,8 +1,8 @@
 /** @file
   Aspire VN7-572G Board Initialization DXE library
 
-  Copyright (c) 2021, Baruch Binyamin Doron
   Copyright (c) 2021, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2021, Baruch Binyamin Doron<BR>
   SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
@@ -33,7 +33,7 @@ EcSendTime (
   INTN        Index;
   UINT8       EcResponse;
 
-  DEBUG ((DEBUG_INFO, "%a() Starts\n", __FUNCTION__));
+  DEBUG ((DEBUG_INFO, "%a() Start\n", __FUNCTION__));
 
   Status = gRT->GetTime (&EfiTime, NULL);
   if (EFI_ERROR (Status)) {
@@ -61,7 +61,7 @@ EcSendTime (
     DEBUG ((DEBUG_INFO, "EC: response 0x%x\n", EcResponse));
   }
 
-  DEBUG ((DEBUG_INFO, "%a() Ends\n", __FUNCTION__));
+  DEBUG ((DEBUG_INFO, "%a() End\n", __FUNCTION__));
 }
 
 /**
@@ -76,7 +76,7 @@ EcRequestsTime (
 {
   UINT8           Dat;
 
-  DEBUG ((DEBUG_INFO, "%a() Starts\n", __FUNCTION__));
+  DEBUG ((DEBUG_INFO, "%a() Start\n", __FUNCTION__));
 
   /* This is executed as protocol notify in vendor's RtKbcDriver when *CommonService
    * protocol is installed. Effectively, this code could execute from the entrypoint */
@@ -85,7 +85,7 @@ EcRequestsTime (
     EcSendTime ();
   }
 
-  DEBUG ((DEBUG_INFO, "%a() Ends\n", __FUNCTION__));
+  DEBUG ((DEBUG_INFO, "%a() End\n", __FUNCTION__));
 }
 
 /**
@@ -113,6 +113,8 @@ EcResetSystemHook (
   IN VOID                     *ResetData OPTIONAL
   )
 {
+  DEBUG ((DEBUG_INFO, "%a() Start\n", __FUNCTION__));
+
   // If boolean PCD tokens 0xBD, 0xBE and 0xBF are set in vendor FW,
   // OEM also sends command 0x5A with argument 0xAA via ACPI "CMDB" method and stalls for
   // 100000, then sets ResetType to EfiResetShutdown.
@@ -126,6 +128,8 @@ EcResetSystemHook (
     // Now OEM calls function offset 2 in ACER_BOOT_DEVICE_SERVICE_PROTOCOL_GUID.
     // TODO: What does this do?
   }
+
+  DEBUG ((DEBUG_INFO, "%a() End\n", __FUNCTION__));
 }
 
 VOID
@@ -148,7 +152,7 @@ BoardInitAfterPciEnumeration (
 {
   EFI_STATUS                       Status;
 
-  DEBUG ((DEBUG_INFO, "%a() Starts\n", __FUNCTION__));
+  DEBUG ((DEBUG_INFO, "%a() Start\n", __FUNCTION__));
 
   // Send EC the present time, if requested
   EcRequestsTime ();
@@ -164,7 +168,7 @@ BoardInitAfterPciEnumeration (
 
   InstallBoardConfigHiiForm ();
 
-  DEBUG ((DEBUG_INFO, "%a() Ends\n", __FUNCTION__));
+  DEBUG ((DEBUG_INFO, "%a() End\n", __FUNCTION__));
   return EFI_SUCCESS;
 }
 
@@ -180,6 +184,7 @@ BoardInitReadyToBoot (
   VOID
   )
 {
+  DEBUG ((DEBUG_INFO, "%a()\n", __FUNCTION__));
   return EFI_SUCCESS;
 }
 
@@ -203,7 +208,7 @@ BoardInitEndOfFirmware (
 {
   EFI_STATUS                       Status;
 
-  DEBUG ((DEBUG_INFO, "%a() Starts\n", __FUNCTION__));
+  DEBUG ((DEBUG_INFO, "%a() Start\n", __FUNCTION__));
 
   // Remove ResetSystem callback. ACPI will be notifying EC of events
   if (mResetNotify != NULL) {
@@ -214,6 +219,6 @@ BoardInitEndOfFirmware (
 
   UninstallBoardConfigHiiForm ();
 
-  DEBUG ((DEBUG_INFO, "%a() Ends\n", __FUNCTION__));
+  DEBUG ((DEBUG_INFO, "%a() End\n", __FUNCTION__));
   return EFI_SUCCESS;
 }

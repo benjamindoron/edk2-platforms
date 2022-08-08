@@ -9,6 +9,7 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #include <Base.h>
 #include <PiDxe.h>
 #include <Library/BoardAcpiTableLib.h>
+#include <Library/DebugLib.h>
 #include <Library/EcLib.h>
 #include <Library/PcdLib.h>
 #include <Protocol/GlobalNvsArea.h>
@@ -22,6 +23,8 @@ AspireVn7Dash572GUpdateGlobalNvs (
 {
   EFI_STATUS  Status;
   UINT8       PowerRegister;
+
+  DEBUG ((DEBUG_INFO, "%a() Start\n", __FUNCTION__));
 
   //
   // Allocate and initialize the NVS area for SMM and ASL communication.
@@ -57,6 +60,8 @@ AspireVn7Dash572GUpdateGlobalNvs (
   mGlobalNvsArea.Area->Ps2KbMsEnable      = PcdGet8 (PcdPs2KbMsEnable);
 
   mGlobalNvsArea.Area->BoardId = (UINT8) LibPcdGetSku ();
+
+  DEBUG ((DEBUG_INFO, "%a() End\n", __FUNCTION__));
 }
 
 EFI_STATUS
