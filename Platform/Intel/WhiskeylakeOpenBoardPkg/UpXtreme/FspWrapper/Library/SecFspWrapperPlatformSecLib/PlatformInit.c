@@ -29,6 +29,12 @@ PlatformInit (
   )
 {
   //
+  // Board/Silicon initialization
+  // Prepare controllers before enabling serial port
+  //
+  BoardAfterTempRamInit ();
+
+  //
   // Platform initialization
   // Enable Serial port here
   //
@@ -40,8 +46,6 @@ PlatformInit (
   DEBUG ((DEBUG_INFO, "FspHobList - 0x%x\n", FspHobList));
   DEBUG ((DEBUG_INFO, "StartOfRange - 0x%x\n", StartOfRange));
   DEBUG ((DEBUG_INFO, "EndOfRange - 0x%x\n", EndOfRange));
-
-  BoardAfterTempRamInit ();
 
   TestPointTempMemoryFunction (StartOfRange, EndOfRange);
 }
