@@ -2,6 +2,7 @@
     Aspire VN7-572G HSIO PTSS H File
 
 Copyright (c) 2017, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2021, Baruch Binyamin Doron<BR>
 SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/

@@ -2,6 +2,7 @@
   GPIO definition table for Acer Aspire VN7-572G
 
 Copyright (c) 2017, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2021, Baruch Binyamin Doron<BR>
 SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
@@ -16,12 +17,21 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 
 #define END_OF_GPIO_TABLE 0xFFFFFFFF
 
-/* TODO: Vendor configures many NC pads as _TERM_GPO. Why? */
-/* TODO: Clean-up
+/*
+ * TODO: Vendor configures many NC pads as _TERM_GPO. Why?
  * - On direction: Are some of these comments illusory? At least some pads
  *   are bidirectional on the other side of the GPIO.
- * - Then, finalise whitespace */
+ * - Clean-up, then finalise whitespace.
+ */
 /* NB: Do not reconfigure pads used by Optimus, their assertion state may be lost */
+
+/*
+ * TODO: Newgate-SLS and Rayleigh-SLS have PCH-H and use the same ProgramGPIOPei module.
+ *       The GPIO tables retrieved from PCDs are ignored. However, progress on those SKUs
+ *       is held up because the final table passed to function similar to RC's
+ *       GpioConfigureSklPch() is neither, but a zero-assigned variable. The code may be
+ *       computing and dereferencing address pointers from a blob of internal data.
+ */
 
 GPIO_INIT_CONFIG mGpioTableAspireVn7Dash572G[] =
 {

@@ -2,6 +2,7 @@
   Aspire VN7-572G Board ACPI Library
 
 Copyright (c) 2017 - 2019, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2021, Baruch Binyamin Doron<BR>
 SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
@@ -71,6 +72,7 @@ AspireVn7Dash572GBoardUpdateAcpiTable (
   IN OUT EFI_ACPI_TABLE_VERSION       *Version
   )
 {
+  // NOTE: Can also patch board-specific SMI handler number
   if (Table->Signature == EFI_ACPI_2_0_DIFFERENTIATED_SYSTEM_DESCRIPTION_TABLE_SIGNATURE) {
     AspireVn7Dash572GUpdateGlobalNvs ();
   }

@@ -40,18 +40,19 @@ HDAUDIO_VERB_TABLE HdaVerbTableAlc255AspireVn7Dash572G = HDAUDIO_VERB_TABLE_INIT
   // Verb ID: Bits 19:8 / Bits 19:16
   // Payload: Bits 7:0  / Bits 15:0
 
-  //Widget node 0x01 : Reset Codec
-  0x0017FF00,
-  0x0017FF00,
-  0x0017FF00,
-  0x0017FF00,
-
+  // NOTE: Do we program subsystem before reset, as vendor does?
   //===== HDA Codec Subsystem ID Verb-table =====
   //HDA Codec Subsystem ID  : 0x10251037
   0x00172037,
   0x00172110,
   0x00172225,
   0x00172310,
+
+  //Widget node 0x01 : Reset Codec
+  0x0017FF00,
+  0x0017FF00,
+  0x0017FF00,
+  0x0017FF00,
 
   //===== Pin Widget Verb-table =====
   //Pin widget 0x12
@@ -141,15 +142,20 @@ HDAUDIO_VERB_TABLE HdaVerbTableAlc255AspireVn7Dash572G = HDAUDIO_VERB_TABLE_INIT
   0x0205000d,  /* Set coeff idx: 0xd */
   0x02042801,  /* Set processing coeff: 0x2801 */
 
-  0x0143b000,  /* Set amplifier gain on speaker: Set output, L+R amp; Unmuted; No gain */
+  0x0143b000,  /* Sends unknown verb 0x3B to speaker */
   0x0143b000,  /* Repeated for units? */
-  0x01470740,  /* Set widget control on speaker: Out enabled; VrefEn: Hi-Z (disabled) */
+  0x01470740,  /* Set widget control on speaker: Output; VrefEn: Hi-Z (disabled) */
   0x01470740,  /* Repeated for units? */
 
   0x01470740,  /* Repeated for units? */
   0x01470740,  /* Repeated for units? */
   0x02050010,  /* Set coeff idx: 0x10 */
   0x02040f20   /* Set processing coeff: 0xf20 */
+
+  /* TODO: Verb-like data follows. Vendor-specific customisations?
+   * - Must also add array comma above */
+//0xfff827d0,
+//0xfff827e0
 );
 
 HDAUDIO_VERB_TABLE HdaVerbTableDisplayAudio = HDAUDIO_VERB_TABLE_INIT (
@@ -167,7 +173,7 @@ HDAUDIO_VERB_TABLE HdaVerbTableDisplayAudio = HDAUDIO_VERB_TABLE_INIT (
   // Verb ID: Bits 19:8 / Bits 19:16
   // Payload: Bits 7:0  / Bits 15:0
 
-  // NOTE: Corrected the table in vendor FW, codec address 0x2, not 0x0
+  // TODO: Do we use codec address 0x2 (rather than 0x0, like vendor?
 
   //
   // Display Audio Verb Table

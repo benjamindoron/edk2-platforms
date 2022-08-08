@@ -2,7 +2,7 @@
   VFR file used by Aspire VN7-572G board configuration component.
 
 Copyright (c) 2015 - 2018, Intel Corporation. All rights reserved.<BR>
-Copyright (c) 2021, Baruch Binyamin Doron
+Copyright (c) 2021, Baruch Binyamin Doron<BR>
 SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
