@@ -21,10 +21,10 @@
 #
 
 [LibraryClasses]
-  BaseLib
   BaseMemoryLib
   PcdLib
   TimerLib
+  IoLib
   PciLib
   HdmiDebugPchDetectionLib
 
@@ -43,10 +43,6 @@
   I2cHdmiDebugSerialPortLib.c
   IgfxI2c.c
   IgfxI2c.h
-
-[Ppis]
-
-[Guids]
 
 [Pcd]
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdI2cHdmiDebugPortDdcI2cChannel    ## CONSUMES

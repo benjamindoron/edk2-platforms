@@ -8,7 +8,6 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 **/
 
 #include <Base.h>
-#include <Library/BaseLib.h>
 #include <Library/SerialPortLib.h>
 #include <Library/PcdLib.h>
 

@@ -7,10 +7,7 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 **/
 
 #include <Base.h>
-#include <Library/BaseLib.h>
 #include <Library/SerialPortLib.h>
-#include <Library/PcdLib.h>
-#include <Library/TimerLib.h>
 
 #include <IgfxI2c.h>
 #include <I2cDebugPortProtocol.h>

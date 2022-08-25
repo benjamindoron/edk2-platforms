@@ -22,6 +22,11 @@ RaiseTplForI2cDebugPortAccess (
   VOID
   )
 {
+  // DebugLibSerialPort exposes potential DEBUG bugs, such as early assertions
+  if (gBS == NULL) {
+    return;
+  }
+
   if (EfiGetCurrentTpl () < TPL_NOTIFY) {
     mPreviousTpl = gBS->RaiseTPL (TPL_NOTIFY);
   }
@@ -37,6 +42,10 @@ RestoreTplAfterI2cDebugPortAccess (
   VOID
   )
 {
+  if (gBS == NULL) {
+    return;
+  }
+
   if (mPreviousTpl > 0) {
     gBS->RestoreTPL (mPreviousTpl);
     mPreviousTpl = 0;

@@ -7,9 +7,7 @@
 **/
 
 #include <Base.h>
-#include <Library/BaseLib.h>
 #include <Library/BaseMemoryLib.h>
-#include <Library/PcdLib.h>
 #include <Library/TimerLib.h>
 
 #include <IgfxI2c.h>

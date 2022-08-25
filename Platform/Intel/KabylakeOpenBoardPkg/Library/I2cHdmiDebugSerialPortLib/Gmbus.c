@@ -7,8 +7,7 @@
 **/
 
 #include <Uefi.h>
-#include <Library/BaseLib.h>
-#include <Library/DebugLib.h>
+//#include <Library/DebugLib.h>
 #include <Library/PcdLib.h>
 #include <Library/IoLib.h>
 #include <Library/PciLib.h>
@@ -33,6 +32,7 @@ GmbusGetGttMmAdr (
   // Check if GTT Memory Mapped BAR has been already assigned, initialize if not
   //
   GttMmPciAddress = PCI_LIB_ADDRESS (SA_IGD_BUS, SA_IGD_DEV, SA_IGD_FUN_0, R_SA_IGD_GTTMMADR);
+  // TODO(benjamindoron): TigerLake has 64-bit BAR
   GttMmAdr = PciRead32 (GttMmPciAddress) & 0xFFFFFFF0;
   if (GttMmAdr == 0) {
     GttMmAdr = (UINT32) FixedPcdGet32 (PcdGttMmAddress);
@@ -337,6 +337,7 @@ GmbusPrepare (
   }
   //
   // Wait for GMBUS to complete any pending commands
+  // - TODO(benjamindoron): GmbusRecoverError()
   //
   Status = GmbusWaitForReady (B_SA_GTTMMADR_GMBUS2_INUSE, FALSE);
   if (EFI_ERROR (Status)) {
@@ -471,7 +472,7 @@ GmbusRead (
 
   //
   // Configure Gmbus port and clock speed
-  //
+  //GMBUS_CLOCK_RATE_100K @todo
   Status = GmbusPrepare (GMBUS_CLOCK_RATE_50K, (DdcBusPinPair & B_SA_GTTMMADR_GMBUS0_PIN_PAIR_MASK));
   if (EFI_ERROR (Status)) {
     goto Done;

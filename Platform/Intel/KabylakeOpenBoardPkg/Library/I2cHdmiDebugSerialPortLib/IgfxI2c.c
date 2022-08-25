@@ -7,8 +7,6 @@
 **/
 
 #include <Uefi.h>
-#include <Library/BaseLib.h>
-#include <Library/IoLib.h>
 #include <Library/PciLib.h>
 #include <IgfxI2c.h>
 
@@ -51,7 +49,6 @@ GetGmbusBusPinPair (
         default:
           return EFI_INVALID_PARAMETER;
       }
-      break;
     // The PCH design lineage from newer CoffeeLake & WhiskeyLake
     case PchTypeCnlLp:
     case PchTypeCnlH:
@@ -72,8 +69,8 @@ GetGmbusBusPinPair (
         default:
           return EFI_INVALID_PARAMETER;
       }
-      break;
-  }
 
-  return EFI_UNSUPPORTED;
+    default:
+      return EFI_UNSUPPORTED;
+  }
 }
