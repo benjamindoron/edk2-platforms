@@ -50,6 +50,7 @@
   gAcpiDebugFeaturePkgTokenSpaceGuid.PcdAcpiDebugFeatureEnable              |TRUE
   gAcpiDebugFeaturePkgTokenSpaceGuid.PcdUseSmmVersion                       |FALSE
   gBeepDebugFeaturePkgTokenSpaceGuid.PcdBeepDebugFeatureEnable              |TRUE
+  gEarlySpiFlashRescueFeaturePkgTokenSpaceGuid.PcdFlashRescueFeatureEnable  |TRUE
   gPostCodeDebugFeaturePkgTokenSpaceGuid.PcdPostCodeDebugFeatureEnable      |TRUE
   gUsb3DebugFeaturePkgTokenSpaceGuid.PcdUsb3DebugFeatureEnable              |TRUE
 

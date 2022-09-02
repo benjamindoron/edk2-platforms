@@ -21,6 +21,10 @@
   !include BeepDebugFeaturePkg/Include/BeepDebugFeature.dsc
 !endif
 
+!if gEarlySpiFlashRescueFeaturePkgTokenSpaceGuid.PcdFlashRescueFeatureEnable == TRUE
+  !include EarlySpiFlashRescueFeaturePkg/Include/EarlySpiFlashRescueFeature.dsc
+!endif
+
 !if gPostCodeDebugFeaturePkgTokenSpaceGuid.PcdPostCodeDebugFeatureEnable == TRUE
   !include PostCodeDebugFeaturePkg/Include/PostCodeDebugFeature.dsc
 !endif

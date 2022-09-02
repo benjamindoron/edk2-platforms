@@ -22,6 +22,7 @@
   #
   AcpiDebugFeaturePkg/AcpiDebugFeaturePkg.dec
   BeepDebugFeaturePkg/BeepDebugFeaturePkg.dec
+  EarlySpiFlashRescueFeaturePkg/EarlySpiFlashRescueFeaturePkg.dec
   PostCodeDebugFeaturePkg/PostCodeDebugFeaturePkg.dec
   Usb3DebugFeaturePkg/Usb3DebugFeaturePkg.dec
 
@@ -67,6 +68,7 @@
   gAcpiDebugFeaturePkgTokenSpaceGuid.PcdAcpiDebugFeatureEnable              |FALSE
   gAcpiDebugFeaturePkgTokenSpaceGuid.PcdUseSmmVersion                       |FALSE
   gBeepDebugFeaturePkgTokenSpaceGuid.PcdBeepDebugFeatureEnable              |FALSE
+  gEarlySpiFlashRescueFeaturePkgTokenSpaceGuid.PcdFlashRescueFeatureEnable  |FALSE
   gPostCodeDebugFeaturePkgTokenSpaceGuid.PcdPostCodeDebugFeatureEnable      |FALSE
   gUsb3DebugFeaturePkgTokenSpaceGuid.PcdUsb3DebugFeatureEnable              |FALSE
 

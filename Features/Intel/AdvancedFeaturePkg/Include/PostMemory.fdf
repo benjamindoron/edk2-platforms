@@ -22,6 +22,10 @@
   !include BeepDebugFeaturePkg/Include/PostMemory.fdf
 !endif
 
+!if gEarlySpiFlashRescueFeaturePkgTokenSpaceGuid.PcdFlashRescueFeatureEnable == TRUE
+  !include EarlySpiFlashRescueFeaturePkg/Include/PostMemory.fdf
+!endif
+
 !if gPostCodeDebugFeaturePkgTokenSpaceGuid.PcdPostCodeDebugFeatureEnable == TRUE
   !include PostCodeDebugFeaturePkg/Include/PostMemory.fdf
 !endif
