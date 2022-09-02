@@ -353,6 +353,10 @@ INF  MdeModulePkg/Universal/Console/GraphicsOutputDxe/GraphicsOutputDxe.inf
 INF  BoardModulePkg/LegacySioDxe/LegacySioDxe.inf
 INF  MdeModulePkg/Bus/Isa/Ps2KeyboardDxe/Ps2KeyboardDxe.inf
 INF  MdeModulePkg/Bus/Isa/Ps2MouseDxe/Ps2MouseDxe.inf
+!if gKabylakeOpenBoardPkgTokenSpaceGuid.PcdI2cHdmiDebugPortSerialTerminalEnable == TRUE
+  INF  MdeModulePkg/Universal/SerialDxe/SerialDxe.inf
+  INF  MdeModulePkg/Universal/Console/TerminalDxe/TerminalDxe.inf
+!endif
 INF  BoardModulePkg/BoardBdsHookDxe/BoardBdsHookDxe.inf
 
 INF  ShellPkg/Application/Shell/Shell.inf
@@ -584,12 +588,7 @@ INF  IntelSiliconPkg/Feature/VTd/IntelVTdDxe/IntelVTdDxe.inf
 
 !if gMinPlatformPkgTokenSpaceGuid.PcdBootToShellOnly == FALSE
 
-INF $(PLATFORM_SI_PACKAGE)/Hsti/Dxe/HstiSiliconDxe.inf
-
-!endif
-
-!if gMinPlatformPkgTokenSpaceGuid.PcdBootToShellOnly == FALSE
-
+INF  $(PLATFORM_SI_PACKAGE)/Hsti/Dxe/HstiSiliconDxe.inf
 INF  $(PLATFORM_PACKAGE)/Hsti/HstiIbvPlatformDxe/HstiIbvPlatformDxe.inf
 
 !if gMinPlatformPkgTokenSpaceGuid.PcdTpm2Enable == TRUE

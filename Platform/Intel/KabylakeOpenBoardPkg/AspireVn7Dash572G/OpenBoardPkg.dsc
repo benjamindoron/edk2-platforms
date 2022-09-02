@@ -25,9 +25,10 @@
   #
   # Debug logging
   #
+  DEFINE USE_HDMI_DEBUG_PORT  = FALSE
   DEFINE USE_PEI_SPI_LOGGING  = FALSE
   DEFINE USE_MEMORY_LOGGING   = FALSE
-  DEFINE RELEASE_LOGGING      = ($(USE_PEI_SPI_LOGGING) || $(USE_MEMORY_LOGGING))
+  DEFINE RELEASE_LOGGING      = ($(USE_HDMI_DEBUG_PORT) || $(USE_PEI_SPI_LOGGING) || $(USE_MEMORY_LOGGING))
   DEFINE TESTING              = TRUE
 
   PLATFORM_NAME                               = $(PLATFORM_PACKAGE)
@@ -206,6 +207,15 @@
   #######################################
   DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
 
+!if $(USE_HDMI_DEBUG_PORT) == TRUE
+  DebugLib|MdePkg/Library/BaseDebugLibSerialPort/BaseDebugLibSerialPort.inf
+
+  #######################################
+  # Board-specific/Silicon Package
+  #######################################
+  SerialPortLib|$(PLATFORM_BOARD_PACKAGE)/Library/I2cHdmiDebugSerialPortLib/SecI2cHdmiDebugSerialPortLib.inf
+!endif
+
   #######################################
   # Platform Package
   #######################################
@@ -278,7 +288,7 @@
   # Edk2 Packages
   #######################################
 # In-memory logging may require too many services for early core debug output
-!if $(USE_MEMORY_LOGGING) == TRUE
+!if ($(USE_MEMORY_LOGGING) == TRUE || $(USE_HDMI_DEBUG_PORT) == TRUE)
   DebugLib|MdeModulePkg/Library/PeiDxeDebugLibReportStatusCode/PeiDxeDebugLibReportStatusCode.inf
 !endif
 
@@ -286,7 +296,7 @@
   #######################################
   # Edk2 Packages
   #######################################
-!if $(USE_MEMORY_LOGGING) == TRUE
+!if ($(USE_MEMORY_LOGGING) == TRUE || $(USE_HDMI_DEBUG_PORT) == TRUE)
   DebugLib|MdeModulePkg/Library/PeiDxeDebugLibReportStatusCode/PeiDxeDebugLibReportStatusCode.inf
 !endif
 
@@ -323,7 +333,7 @@
   #######################################
   # Edk2 Packages
   #######################################
-!if $(USE_MEMORY_LOGGING) == TRUE
+!if ($(USE_MEMORY_LOGGING) == TRUE || $(USE_HDMI_DEBUG_PORT) == TRUE)
   DebugLib|MdeModulePkg/Library/PeiDxeDebugLibReportStatusCode/PeiDxeDebugLibReportStatusCode.inf
 !endif
 
@@ -337,7 +347,7 @@
   # Edk2 Packages
   #######################################
 # In-memory logging may require too many services for early core debug output
-!if $(USE_MEMORY_LOGGING) == TRUE
+!if ($(USE_MEMORY_LOGGING) == TRUE || $(USE_HDMI_DEBUG_PORT) == TRUE)
   DebugLib|MdeModulePkg/Library/PeiDxeDebugLibReportStatusCode/PeiDxeDebugLibReportStatusCode.inf
 !endif
 
@@ -345,7 +355,7 @@
   #######################################
   # Edk2 Packages
   #######################################
-!if $(USE_MEMORY_LOGGING) == TRUE
+!if ($(USE_MEMORY_LOGGING) == TRUE || $(USE_HDMI_DEBUG_PORT) == TRUE)
   DebugLib|MdeModulePkg/Library/PeiDxeDebugLibReportStatusCode/PeiDxeDebugLibReportStatusCode.inf
 !endif
 
@@ -364,7 +374,21 @@
   TestPointCheckLib|$(PLATFORM_PACKAGE)/Test/Library/TestPointCheckLib/SmmTestPointCheckLib.inf
 !endif
 
-# TODO: DebugLib override for UEFI_DRIVER and UEFI_APPLICATION?
+[LibraryClasses.common.UEFI_DRIVER]
+  #######################################
+  # Edk2 Packages
+  #######################################
+!if ($(USE_MEMORY_LOGGING) == TRUE || $(USE_HDMI_DEBUG_PORT) == TRUE)
+  DebugLib|MdeModulePkg/Library/PeiDxeDebugLibReportStatusCode/PeiDxeDebugLibReportStatusCode.inf
+!endif
+
+[LibraryClasses.common.UEFI_APPLICATION]
+  #######################################
+  # Edk2 Packages
+  #######################################
+!if ($(USE_MEMORY_LOGGING) == TRUE || $(USE_HDMI_DEBUG_PORT) == TRUE)
+  DebugLib|MdeModulePkg/Library/PeiDxeDebugLibReportStatusCode/PeiDxeDebugLibReportStatusCode.inf
+!endif
 
 # TODO: Add and improve feature support
 #######################################
@@ -390,6 +414,9 @@
 !if $(USE_MEMORY_LOGGING) == TRUE
       SerialPortLib|MdeModulePkg/Library/PeiDxeSerialPortLibMem/PeiSerialPortLibMem.inf
 !endif
+!endif
+!if $(USE_HDMI_DEBUG_PORT) == TRUE
+      SerialPortLib|$(PLATFORM_BOARD_PACKAGE)/Library/I2cHdmiDebugSerialPortLib/PeiI2cHdmiDebugSerialPortLib.inf
 !endif
     <PcdsFixedAtBuild>
       gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseSerial|$(RELEASE_LOGGING)
@@ -518,14 +545,24 @@
   #######################################
   # Edk2 Packages
   #######################################
+  MdeModulePkg/Core/Dxe/DxeMain.inf {
+    <LibraryClasses>
+      # Can debug CpuExceptionHandlerLib
+!if $(USE_HDMI_DEBUG_PORT) == TRUE
+      SerialPortLib|$(PLATFORM_BOARD_PACKAGE)/Library/I2cHdmiDebugSerialPortLib/DxeI2cHdmiDebugSerialPortLib.inf
+!endif
+  }
   MdeModulePkg/Universal/StatusCodeHandler/RuntimeDxe/StatusCodeHandlerRuntimeDxe.inf {
     <LibraryClasses>
       DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
 !if $(USE_MEMORY_LOGGING) == TRUE
       SerialPortLib|MdeModulePkg/Library/PeiDxeSerialPortLibMem/DxeSerialPortLibMem.inf
 !endif
+!if $(USE_HDMI_DEBUG_PORT) == TRUE
+      SerialPortLib|$(PLATFORM_BOARD_PACKAGE)/Library/I2cHdmiDebugSerialPortLib/RuntimeDxeI2cHdmiDebugSerialPortLib.inf
+!endif
     <PcdsFixedAtBuild>
-      gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseSerial|$(USE_MEMORY_LOGGING)
+      gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseSerial|($(USE_MEMORY_LOGGING) || $(USE_HDMI_DEBUG_PORT))
       gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeMemorySize|512
   }
   # TODO: Still requires a little more thought
@@ -535,8 +572,11 @@
 !if $(USE_MEMORY_LOGGING) == TRUE
       SerialPortLib|MdeModulePkg/Library/PeiDxeSerialPortLibMem/SmmSerialPortLibMem.inf
 !endif
+!if $(USE_HDMI_DEBUG_PORT) == TRUE
+      SerialPortLib|$(PLATFORM_BOARD_PACKAGE)/Library/I2cHdmiDebugSerialPortLib/SmmI2cHdmiDebugSerialPortLib.inf
+!endif
     <PcdsFixedAtBuild>
-      gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseSerial|$(USE_MEMORY_LOGGING)
+      gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseSerial|($(USE_MEMORY_LOGGING) || $(USE_HDMI_DEBUG_PORT))
       gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeMemorySize|512
   }
   MdeModulePkg/Bus/Ata/AtaAtapiPassThru/AtaAtapiPassThru.inf
@@ -549,12 +589,24 @@
   MdeModulePkg/Universal/BdsDxe/BdsDxe.inf {
     <LibraryClasses>
       NULL|BoardModulePkg/Library/BdsPs2KbcLib/BdsPs2KbcLib.inf
+!if gKabylakeOpenBoardPkgTokenSpaceGuid.PcdI2cHdmiDebugPortSerialTerminalEnable == TRUE
+      NULL|BoardModulePkg/Library/BdsSerialPortTerminalLib/BdsSerialPortTerminalLib.inf
+!endif
   }
+!if gKabylakeOpenBoardPkgTokenSpaceGuid.PcdI2cHdmiDebugPortSerialTerminalEnable == TRUE
+  MdeModulePkg/Universal/SerialDxe/SerialDxe.inf {
+    <LibraryClasses>
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
+      SerialPortLib|$(PLATFORM_BOARD_PACKAGE)/Library/I2cHdmiDebugSerialPortLib/DxeI2cHdmiDebugSerialPortLib.inf
+  }
+  MdeModulePkg/Universal/Console/TerminalDxe/TerminalDxe.inf
+!endif
+
   UefiCpuPkg/CpuDxe/CpuDxe.inf {
     <LibraryClasses>
-!if $(USE_MEMORY_LOGGING) == TRUE
-# TODO/TEST
-#      SerialPortLib|MdeModulePkg/Library/PeiDxeSerialPortLibMem/DxeSerialPortLibMem.inf
+      # Can debug CpuExceptionHandlerLib
+!if $(USE_HDMI_DEBUG_PORT) == TRUE
+      SerialPortLib|$(PLATFORM_BOARD_PACKAGE)/Library/I2cHdmiDebugSerialPortLib/DxeI2cHdmiDebugSerialPortLib.inf
 !endif
   }
 
@@ -590,12 +642,9 @@
     <PcdsPatchableInModule>
       gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x80080046
     <LibraryClasses>
-      !if $(TARGET) == DEBUG
-        DebugLib|MdePkg/Library/BaseDebugLibSerialPort/BaseDebugLibSerialPort.inf
-      !endif
-!if $(USE_MEMORY_LOGGING) == TRUE
-# TODO/TEST
-#      SerialPortLib|MdeModulePkg/Library/PeiDxeSerialPortLibMem/SmmSerialPortLibMem.inf
+        # Can debug CpuExceptionHandlerLib
+!if $(USE_HDMI_DEBUG_PORT) == TRUE
+        SerialPortLib|$(PLATFORM_BOARD_PACKAGE)/Library/I2cHdmiDebugSerialPortLib/SmmI2cHdmiDebugSerialPortLib.inf
 !endif
   }
 !endif

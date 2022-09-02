@@ -228,7 +228,7 @@
   gEfiMdePkgTokenSpaceGuid.PcdReportStatusCodePropertyMask|0x07
 !else
   gEfiMdePkgTokenSpaceGuid.PcdDebugPropertyMask|0x0
-  gEfiMdePkgTokenSpaceGuid.PcdReportStatusCodePropertyMask|0x3
+  gEfiMdePkgTokenSpaceGuid.PcdReportStatusCodePropertyMask|0x03
 !endif # $(RELEASE_LOGGING)
 !else
   # FIXME: More than just compiler optimisation is hooked to DEBUG builds.
@@ -265,6 +265,8 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseMemory|FALSE
 !if $(TARGET) == RELEASE
   gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseSerial|FALSE
+  # Determine RTS/CTS requirement
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialUseHardwareFlowControl|FALSE
 !else
   gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseSerial|TRUE
   gEfiMdeModulePkgTokenSpaceGuid.PcdSerialUseHardwareFlowControl|FALSE
@@ -408,7 +410,37 @@
   #  3: DDC channel C
   #  4: DDC channel D
   # @Prompt DDC I2C channel to claim as the HDMI debug port
-  gKabylakeOpenBoardPkgTokenSpaceGuid.PcdI2cHdmiDebugPortDdcI2cChannel|0x00  #@todo - Set to correct value for VN7-572G
+  gKabylakeOpenBoardPkgTokenSpaceGuid.PcdI2cHdmiDebugPortDdcI2cChannel|0x02
+
+  ## Enable usage the HDMI DDC channel as a debug port - Causes the BIOS debug log
+  #  to be written to the HDMI DDC channel.
+  #  The value is defined as below.
+  #  FALSE: Do NOT use the HDMI DDC channel as a debug port
+  #  TRUE:  Use the HDMI DDC channel as a debug port
+  # @Prompt Enable usage the HDMI DDC channel as a debug port
+  gKabylakeOpenBoardPkgTokenSpaceGuid.PcdI2cHdmiDebugPortEnable|$(USE_HDMI_DEBUG_PORT)
+
+  ## Enable usage the HDMI DDC channel as a serial terminal - Enables usage of the
+  #  HDMI DDC channel to display BIOS Setup, UEFI Shell, etc. using a terminal
+  #  emulator. Useful for cases where video is not operating correctly.
+  #
+  #  The value is defined as below.
+  #  FALSE: Do NOT use the HDMI DDC channel as a debug port
+  #  TRUE:  Use the HDMI DDC channel as a debug port
+  # @Prompt Enable usage the HDMI DDC channel as a debug port
+  gKabylakeOpenBoardPkgTokenSpaceGuid.PcdI2cHdmiDebugPortSerialTerminalEnable|FALSE
+
+  ## Indicates the type of terminal to use.
+  #  If PcdI2cHdmiDebugPortSerialTerminalEnable is TRUE, this PCD will be used
+  #  to determine which terminal protocol to use.
+  #  0 - PCANSI
+  #  1 - VT100
+  #  2 - VT100+
+  #  3 - UTF8
+  #  4 - TTYTERM
+  # @Prompt Default Terminal Type.
+  # @ValidRange 0x80000001 | 0 - 4
+  gEfiMdePkgTokenSpaceGuid.PcdDefaultTerminalType|3
 
 [PcdsFixedAtBuild.IA32]
   ######################################
@@ -434,7 +466,16 @@
   ######################################
   # Edk2 Configuration
   ######################################
-  gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x80000046  # 0x804800C7/0x806A15CF give useful information, but is very noisy
+  # TODO: Dynamic in HII
+  gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x80000046
+!if FALSE
+  # Filtered DEBUG_POOL, DEBUG_PAGE, DEBUG_GCD and DEBUG_CACHE
+  # - Unused: DEBUG_VARIABLE, DEBUG_BM and DEBUG_LOADFILE
+  gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x804950CF
+!endif
+!if ($(TESTING) == TRUE && $(USE_HDMI_DEBUG_PORT) == FALSE)
+  gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x80400046
+!endif
 
   ######################################
   # Silicon Configuration
@@ -447,9 +488,9 @@
   # Platform Configuration
   ######################################
 !if $(TARGET) == DEBUG
-  gMinPlatformPkgTokenSpaceGuid.PcdSecSerialPortDebugEnable|1
+  gMinPlatformPkgTokenSpaceGuid.PcdSecSerialPortDebugEnable|TRUE
 !else
-  gMinPlatformPkgTokenSpaceGuid.PcdSecSerialPortDebugEnable|0
+  gMinPlatformPkgTokenSpaceGuid.PcdSecSerialPortDebugEnable|FALSE
 !endif
 
 [PcdsDynamicDefault]
@@ -528,6 +569,9 @@
   gEfiMdePkgTokenSpaceGuid.PcdPlatformBootTimeOut|L"Timeout"|gEfiGlobalVariableGuid|0x0|1 # Variable: L"Timeout"
 !else
   gEfiMdePkgTokenSpaceGuid.PcdPlatformBootTimeOut|L"Timeout"|gEfiGlobalVariableGuid|0x0|5 # Variable: L"Timeout"
+!endif
+!if $(USE_HDMI_DEBUG_PORT) == TRUE
+  gEfiMdePkgTokenSpaceGuid.PcdPlatformBootTimeOut|L"Timeout"|gEfiGlobalVariableGuid|0x0|15 # Variable: L"Timeout"
 !endif
 !if gMinPlatformPkgTokenSpaceGuid.PcdTpm2Enable == TRUE
   gEfiSecurityPkgTokenSpaceGuid.PcdTcgPhysicalPresenceInterfaceVer|L"TCG2_VERSION"|gTcg2ConfigFormSetGuid|0x0|"1.3"|NV,BS
