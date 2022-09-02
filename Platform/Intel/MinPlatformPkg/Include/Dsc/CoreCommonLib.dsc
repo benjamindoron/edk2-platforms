@@ -122,7 +122,7 @@
   DebugLib|MdeModulePkg/Library/PeiDxeDebugLibReportStatusCode/PeiDxeDebugLibReportStatusCode.inf
 !endif
 
-!if $(TARGET) == RELEASE
+!if gMinPlatformPkgTokenSpaceGuid.PcdSmiHandlerProfileEnable == FALSE
   SmiHandlerProfileLib|MdePkg/Library/SmiHandlerProfileLibNull/SmiHandlerProfileLibNull.inf
 !else
   SmiHandlerProfileLib|MdeModulePkg/Library/SmmSmiHandlerProfileLib/SmmSmiHandlerProfileLib.inf

@@ -32,6 +32,6 @@
   !endif
 
 [PcdsFixedAtBuild.Common]
-  !if $(TARGET) != RELEASE
+  !if gMinPlatformPkgTokenSpaceGuid.PcdSmiHandlerProfileEnable == TRUE
     gEfiMdeModulePkgTokenSpaceGuid.PcdSmiHandlerProfilePropertyMask|0x1
   !endif
