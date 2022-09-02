@@ -22,15 +22,6 @@
   #
   DEFINE BIOS_SIZE_OPTION = SIZE_60
 
-  #
-  # Debug logging
-  #
-  DEFINE USE_HDMI_DEBUG_PORT  = FALSE
-  DEFINE USE_PEI_SPI_LOGGING  = FALSE
-  DEFINE USE_MEMORY_LOGGING   = FALSE
-  DEFINE RELEASE_LOGGING      = ($(USE_HDMI_DEBUG_PORT) || $(USE_PEI_SPI_LOGGING) || $(USE_MEMORY_LOGGING))
-  DEFINE TESTING              = TRUE
-
   PLATFORM_NAME                               = $(PLATFORM_PACKAGE)
   PLATFORM_GUID                               = AEEEF17C-36B6-4B68-949A-1E54CB33492F
   PLATFORM_VERSION                            = 0.1
@@ -40,8 +31,16 @@
   BUILD_TARGETS                               = DEBUG|RELEASE
   SKUID_IDENTIFIER                            = ALL
   FLASH_DEFINITION                            = $(PROJECT)/OpenBoardPkg.fdf
-
   FIX_LOAD_TOP_MEMORY_ADDRESS                 = 0x0
+
+  #
+  # Debug logging
+  #
+  DEFINE USE_HDMI_DEBUG_PORT  = FALSE
+  DEFINE USE_PEI_SPI_LOGGING  = FALSE
+  DEFINE USE_MEMORY_LOGGING   = FALSE
+  DEFINE RELEASE_LOGGING      = ($(USE_HDMI_DEBUG_PORT) || $(USE_PEI_SPI_LOGGING) || $(USE_MEMORY_LOGGING))
+  DEFINE TESTING              = FALSE
 
   #
   # Include PCD configuration for this board.
@@ -143,7 +142,7 @@
   #######################################
   FspWrapperApiLib|IntelFsp2WrapperPkg/Library/BaseFspWrapperApiLib/BaseFspWrapperApiLib.inf
   FspWrapperApiTestLib|IntelFsp2WrapperPkg/Library/PeiFspWrapperApiTestLib/PeiFspWrapperApiTestLib.inf
-  # This board will set debugging library instances; FIXME: UART2 not used
+  # Board DSC will select debug library instances; NOTE: UART2 not used
   SerialPortLib|MdePkg/Library/BaseSerialPortLibNull/BaseSerialPortLibNull.inf
 
   #######################################
@@ -199,12 +198,11 @@
   #######################################
   PlatformHookLib|MdeModulePkg/Library/BasePlatformHookLibNull/BasePlatformHookLibNull.inf
 
-# NB: MinPlatform sets a NULL DebugLib and only overrides it for DEBUG builds
-# TODO: Now that all debug logging is routed through RSC, correct the defines
 [LibraryClasses.IA32.SEC]
   #######################################
   # Edk2 Packages
   #######################################
+# NOTE: No way that RSC avoids PeiServices in SEC? Even if valid on re-entry...
   DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
 
 !if $(USE_HDMI_DEBUG_PORT) == TRUE
@@ -232,7 +230,8 @@
   # Edk2 Packages
   #######################################
 # SPI logging requires local patch: InitializeMemoryServices() before ProcessLibraryConstructorList()
-# In-memory logging may require too many services for early core debug output
+# Strongly suspect DebugLibSerialPort constructor presents PeiDxeSerialPortLibMem dependency on services as a bug
+# - While RSC calls Initialize after dependencies and constructors are satisfied
 !if $(RELEASE_LOGGING) == TRUE
   DebugLib|MdeModulePkg/Library/PeiDxeDebugLibReportStatusCode/PeiDxeDebugLibReportStatusCode.inf
 !endif
@@ -258,7 +257,7 @@
   FspWrapperPlatformLib|$(PLATFORM_PACKAGE)/FspWrapper/Library/PeiFspWrapperPlatformLib/PeiFspWrapperPlatformLib.inf
   MultiBoardInitSupportLib|$(PLATFORM_PACKAGE)/PlatformInit/Library/MultiBoardInitSupportLib/PeiMultiBoardInitSupportLib.inf
   TestPointLib|$(PLATFORM_PACKAGE)/Test/Library/TestPointLib/PeiTestPointLib.inf
-!if ($(TARGET) == DEBUG || $(TESTING) == TRUE)
+!if ($(TARGET) == DEBUG || $(RELEASE_LOGGING) == TRUE)
   TestPointCheckLib|$(PLATFORM_PACKAGE)/Test/Library/TestPointCheckLib/PeiTestPointCheckLib.inf
 !endif
   SetCacheMtrrLib|$(PLATFORM_PACKAGE)/Library/SetCacheMtrrLib/SetCacheMtrrLibNull.inf
@@ -288,7 +287,8 @@
   #######################################
   # Edk2 Packages
   #######################################
-# In-memory logging may require too many services for early core debug output
+# Strongly suspect DebugLibSerialPort constructor presents PeiDxeSerialPortLibMem dependency on services as a bug
+# - While RSC calls Initialize after dependencies and constructors are satisfied
 !if ($(USE_MEMORY_LOGGING) == TRUE || $(USE_HDMI_DEBUG_PORT) == TRUE)
   DebugLib|MdeModulePkg/Library/PeiDxeDebugLibReportStatusCode/PeiDxeDebugLibReportStatusCode.inf
 !endif
@@ -316,7 +316,7 @@
   MultiBoardInitSupportLib|$(PLATFORM_PACKAGE)/PlatformInit/Library/MultiBoardInitSupportLib/DxeMultiBoardInitSupportLib.inf
   TestPointLib|$(PLATFORM_PACKAGE)/Test/Library/TestPointLib/DxeTestPointLib.inf
 
-!if ($(TARGET) == DEBUG || $(TESTING) == TRUE)
+!if ($(TARGET) == DEBUG || $(RELEASE_LOGGING) == TRUE)
   TestPointCheckLib|$(PLATFORM_PACKAGE)/Test/Library/TestPointCheckLib/DxeTestPointCheckLib.inf
 !endif
   #######################################
@@ -347,7 +347,8 @@
   #######################################
   # Edk2 Packages
   #######################################
-# In-memory logging may require too many services for early core debug output
+# Strongly suspect DebugLibSerialPort constructor presents PeiDxeSerialPortLibMem dependency on services as a bug
+# - While RSC calls Initialize after dependencies and constructors are satisfied
 !if ($(USE_MEMORY_LOGGING) == TRUE || $(USE_HDMI_DEBUG_PORT) == TRUE)
   DebugLib|MdeModulePkg/Library/PeiDxeDebugLibReportStatusCode/PeiDxeDebugLibReportStatusCode.inf
 !endif
@@ -371,7 +372,7 @@
   BoardAcpiEnableLib|$(PLATFORM_PACKAGE)/Acpi/Library/MultiBoardAcpiSupportLib/SmmMultiBoardAcpiSupportLib.inf
   MultiBoardAcpiSupportLib|$(PLATFORM_PACKAGE)/Acpi/Library/MultiBoardAcpiSupportLib/SmmMultiBoardAcpiSupportLib.inf
   TestPointLib|$(PLATFORM_PACKAGE)/Test/Library/TestPointLib/SmmTestPointLib.inf
-!if ($(TARGET) == DEBUG || $(TESTING) == TRUE)
+!if ($(TARGET) == DEBUG || $(RELEASE_LOGGING) == TRUE)
   TestPointCheckLib|$(PLATFORM_PACKAGE)/Test/Library/TestPointCheckLib/SmmTestPointCheckLib.inf
 !endif
 
@@ -409,12 +410,12 @@
   MdeModulePkg/Universal/StatusCodeHandler/Pei/StatusCodeHandlerPei.inf {
     <LibraryClasses>
       DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
-!if $(USE_PEI_SPI_LOGGING) == TRUE
-      SerialPortLib|$(PLATFORM_BOARD_PACKAGE)/Library/PeiSerialPortLibSpiFlash/PeiSerialPortLibSpiFlash.inf
-!else
+      # Reverse-ranked priority list
 !if $(USE_MEMORY_LOGGING) == TRUE
       SerialPortLib|MdeModulePkg/Library/PeiDxeSerialPortLibMem/PeiSerialPortLibMem.inf
 !endif
+!if $(USE_PEI_SPI_LOGGING) == TRUE
+      SerialPortLib|$(PLATFORM_BOARD_PACKAGE)/Library/PeiSerialPortLibSpiFlash/PeiSerialPortLibSpiFlash.inf
 !endif
 !if $(USE_HDMI_DEBUG_PORT) == TRUE
       SerialPortLib|$(PLATFORM_BOARD_PACKAGE)/Library/I2cHdmiDebugSerialPortLib/PeiI2cHdmiDebugSerialPortLib.inf
@@ -432,10 +433,14 @@
   IntelFsp2WrapperPkg/FspmWrapperPeim/FspmWrapperPeim.inf {
     <LibraryClasses>
       SiliconPolicyInitLib|$(PLATFORM_SI_PACKAGE)/Library/PeiSiliconPolicyInitLibDependency/PeiPreMemSiliconPolicyInitLibDependency.inf
+      NULL|SecurityPkg/Library/HashInstanceLibSha1/HashInstanceLibSha1.inf
+      NULL|SecurityPkg/Library/HashInstanceLibSha256/HashInstanceLibSha256.inf
   }
   IntelFsp2WrapperPkg/FspsWrapperPeim/FspsWrapperPeim.inf {
     <LibraryClasses>
       SiliconPolicyInitLib|$(PLATFORM_SI_PACKAGE)/Library/PeiSiliconPolicyInitLibDependency/PeiPostMemSiliconPolicyInitLibDependency.inf
+      NULL|SecurityPkg/Library/HashInstanceLibSha1/HashInstanceLibSha1.inf
+      NULL|SecurityPkg/Library/HashInstanceLibSha256/HashInstanceLibSha256.inf
   }
 !else
   #
@@ -445,6 +450,8 @@
   IntelFsp2WrapperPkg/FspmWrapperPeim/FspmWrapperPeim.inf {
     <LibraryClasses>
       SiliconPolicyInitLib|MinPlatformPkg/PlatformInit/Library/SiliconPolicyInitLibNull/SiliconPolicyInitLibNull.inf
+      NULL|SecurityPkg/Library/HashInstanceLibSha1/HashInstanceLibSha1.inf
+      NULL|SecurityPkg/Library/HashInstanceLibSha256/HashInstanceLibSha256.inf
   }
   #
   # In FSP Dispatch mode the policy will be installed after FSP-S dispatched (only PrePolicy silicon-init executed).
@@ -453,6 +460,8 @@
   IntelFsp2WrapperPkg/FspsWrapperPeim/FspsWrapperPeim.inf {
     <LibraryClasses>
       SiliconPolicyInitLib|MinPlatformPkg/PlatformInit/Library/SiliconPolicyInitLibNull/SiliconPolicyInitLibNull.inf
+      NULL|SecurityPkg/Library/HashInstanceLibSha1/HashInstanceLibSha1.inf
+      NULL|SecurityPkg/Library/HashInstanceLibSha256/HashInstanceLibSha256.inf
   }
 !endif
 
@@ -556,6 +565,7 @@
   MdeModulePkg/Universal/StatusCodeHandler/RuntimeDxe/StatusCodeHandlerRuntimeDxe.inf {
     <LibraryClasses>
       DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
+      # Reverse-ranked priority list
 !if $(USE_MEMORY_LOGGING) == TRUE
       SerialPortLib|MdeModulePkg/Library/PeiDxeSerialPortLibMem/DxeSerialPortLibMem.inf
 !endif
@@ -564,12 +574,12 @@
 !endif
     <PcdsFixedAtBuild>
       gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseSerial|($(USE_MEMORY_LOGGING) || $(USE_HDMI_DEBUG_PORT))
-      gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeMemorySize|512
+      gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeMemorySize|1024
   }
-  # TODO: Still requires a little more thought
   MdeModulePkg/Universal/StatusCodeHandler/Smm/StatusCodeHandlerSmm.inf {
     <LibraryClasses>
       DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
+      # Reverse-ranked priority list
 !if $(USE_MEMORY_LOGGING) == TRUE
       SerialPortLib|MdeModulePkg/Library/PeiDxeSerialPortLibMem/SmmSerialPortLibMem.inf
 !endif
@@ -578,8 +588,9 @@
 !endif
     <PcdsFixedAtBuild>
       gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeUseSerial|($(USE_MEMORY_LOGGING) || $(USE_HDMI_DEBUG_PORT))
-      gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeMemorySize|512
+      gEfiMdeModulePkgTokenSpaceGuid.PcdStatusCodeMemorySize|1024
   }
+# TODO: Add NvmExpressDxe if supporting Newgate and RayleighSLS
   MdeModulePkg/Bus/Ata/AtaAtapiPassThru/AtaAtapiPassThru.inf
   MdeModulePkg/Bus/Ata/AtaBusDxe/AtaBusDxe.inf
   MdeModulePkg/Bus/Pci/PciHostBridgeDxe/PciHostBridgeDxe.inf

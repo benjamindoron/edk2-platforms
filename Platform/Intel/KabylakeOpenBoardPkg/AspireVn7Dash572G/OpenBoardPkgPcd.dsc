@@ -13,9 +13,10 @@
 #
 ################################################################################
 
-# TODO: Harden and tune platform by PCDs
-# TODO: Consider removing PCDs declared by build report to be unused (but confirm first)
-# - Also, consider more "fixed" and more "dynamic"/"patchable"
+# TODO:
+# - Harden and tune platform by PCDs
+# - Consider removing PCDs declared by build report to be unused (but confirm first)
+#   - Also, consider more "fixed" and more "dynamic"/"patchable"
 
 [PcdsFixedAtBuild.common]
   ######################################
@@ -118,13 +119,14 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdPs2MouseExtendedVerification|FALSE  # TODO/TEST
   gEfiMdeModulePkgTokenSpaceGuid.PcdHiiOsRuntimeSupport|FALSE
   gUefiCpuPkgTokenSpaceGuid.PcdCpuSmmEnableBspElection|FALSE
+  # TODO: Hook-up memory, SMM and SMI handler profiling
   gUefiCpuPkgTokenSpaceGuid.PcdCpuSmmProfileEnable|FALSE
 
 # TODO: Prune this list to relevant features only
 !if gMinPlatformPkgTokenSpaceGuid.PcdBootStage >= 6
-  # FIXME: SMM path also PatchAndLoadAcpiTable()
-  gAcpiDebugFeaturePkgTokenSpaceGuid.PcdAcpiDebugFeatureEnable            |FALSE
-  # PcdIpmiFeatureEnable will not be enabled (no BMC)
+  gAcpiDebugFeaturePkgTokenSpaceGuid.PcdAcpiDebugFeatureEnable            |TRUE
+  gAcpiDebugFeaturePkgTokenSpaceGuid.PcdUseSmmVersion                     |FALSE
+# NOTE: PcdIpmiFeatureEnable will not be enabled (no BMC)
   # TODO: Can be build-time (user) choice
   gNetworkFeaturePkgTokenSpaceGuid.PcdNetworkFeatureEnable                |FALSE
   gS3FeaturePkgTokenSpaceGuid.PcdS3FeatureEnable                          |TRUE
@@ -132,12 +134,9 @@
   gSmbiosFeaturePkgTokenSpaceGuid.PcdSmbiosFeatureEnable                  |TRUE
   # Requires actual hook-up
   gUsb3DebugFeaturePkgTokenSpaceGuid.PcdUsb3DebugFeatureEnable            |FALSE
-  # FIXME: (Similar) DXE module is duplicate?
-  gUserAuthFeaturePkgTokenSpaceGuid.PcdUserAuthenticationFeatureEnable    |FALSE
-  # FIXME: Must BootLogoEnableLogo() to turn platform logo into boot logo
-  # - BGRT must be BMP, but this duplicates FSP logo. Can GetSectionFromAnyFv()?
-  gLogoFeaturePkgTokenSpaceGuid.PcdLogoFeatureEnable                      |FALSE
-  gLogoFeaturePkgTokenSpaceGuid.PcdJpgEnable                              |FALSE
+  # FIXME: Version2 not working - doesn't challenge for password
+  gUserAuthFeaturePkgTokenSpaceGuid.PcdUserAuthenticationFeatureEnable    |TRUE
+  gLogoFeaturePkgTokenSpaceGuid.PcdLogoFeatureEnable                      |TRUE
 !endif
 
   ######################################
@@ -209,7 +208,7 @@
   # Board Configuration
   ######################################
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdMultiBoardSupport|FALSE
-  gKabylakeOpenBoardPkgTokenSpaceGuid.PcdTbtEnable|FALSE  # TODO: Enable if supporting Newgate
+  gKabylakeOpenBoardPkgTokenSpaceGuid.PcdTbtEnable|FALSE  # TODO: Enable if supporting Newgate and RayleighSLS
 
 [PcdsFixedAtBuild.common]
   ######################################
@@ -245,16 +244,29 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdBrowserSubtitleTextColor|0x0
   gEfiMdeModulePkgTokenSpaceGuid.PcdCpuStackGuard|TRUE
   gEfiMdeModulePkgTokenSpaceGuid.PcdFastPS2Detection|TRUE  # TODO/TEST
+!if FALSE  # FIXME: Causes DxeTestPointCheck ASSERT
+  # Guard DXE phase in non-stop mode, preferred over UAF detection (mutually exclusive)
+  # NOTE: SMM phase requires disabling PcdCpuSmmRestrictedMemoryAccess, so only enable to test
+  # TODO/TEST: Also test with guarded pool-head and with UAF detection feature
+  gEfiMdeModulePkgTokenSpaceGuid.PcdHeapGuardPropertyMask|0x43
+#!else
+  # Guard DXE phase preferred over UAF detection (mutually exclusive)
+  # TODO: Consider performance impact on release builds
+  gEfiMdeModulePkgTokenSpaceGuid.PcdHeapGuardPropertyMask|0x03
+!endif
+  # Protects loader, BS and RT code and data. TODO: Should not protect code and also ACPI memory?
+  gEfiMdeModulePkgTokenSpaceGuid.PcdHeapGuardPageType|0x7E
+  gEfiMdeModulePkgTokenSpaceGuid.PcdHeapGuardPoolType|0x7E
   gEfiMdeModulePkgTokenSpaceGuid.PcdHwErrStorageSize|0x00000800
   gEfiMdeModulePkgTokenSpaceGuid.PcdLoadModuleAtFixAddressEnable|$(TOP_MEMORY_ADDRESS)
   gEfiMdeModulePkgTokenSpaceGuid.PcdMaxHardwareErrorVariableSize|0x400
   gEfiMdeModulePkgTokenSpaceGuid.PcdMaxVariableSize|0x8000
-!if $(TESTING) == TRUE
-  # Test with non-stop mode, so not disabling for loader.
-  gEfiMdeModulePkgTokenSpaceGuid.PcdNullPointerDetectionPropertyMask|0x43
+!if $(RELEASE_LOGGING) == TRUE
+  # Using non-stop mode, so not disabling for loader. NOTE/TEST: Reconsider use with SMM, which causes SMM profiling to be enabled
+  gEfiMdeModulePkgTokenSpaceGuid.PcdNullPointerDetectionPropertyMask|0x41
 !else
-  # FIXME: Can be broken for CSM. At this time, be permissive for loader.
-  gEfiMdeModulePkgTokenSpaceGuid.PcdNullPointerDetectionPropertyMask|0x83
+  # FIXME: At this time, be permissive for loader
+  gEfiMdeModulePkgTokenSpaceGuid.PcdNullPointerDetectionPropertyMask|0x81
 !endif
   gEfiMdeModulePkgTokenSpaceGuid.PcdReclaimVariableSpaceAtEndOfDxe|TRUE
   gEfiMdeModulePkgTokenSpaceGuid.PcdSetNxForStack|TRUE
@@ -269,10 +281,10 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdSerialUseHardwareFlowControl|FALSE
 !endif
 
-  # UPDs are updated at runtime, don't bother measuring
+  # Measure default UPDs, code to update UPDs is measured as well
   # BUGBUG: FSP-S measurement returns DEVICE_ERROR from PtpCrbTpmCommand() - Step 0.
   # - Similarly, Tcg2Dxe.c:Tpm2GetCapabilityManufactureID() - first command - fails?
-  gIntelFsp2WrapperTokenSpaceGuid.PcdFspMeasurementConfig|0x00000006
+  gIntelFsp2WrapperTokenSpaceGuid.PcdFspMeasurementConfig|0x80000006
 
   gPcAtChipsetPkgTokenSpaceGuid.PcdAcpiIoBarEnableMask|0x80
   gPcAtChipsetPkgTokenSpaceGuid.PcdAcpiIoPciBarRegisterOffset|0x40
@@ -435,6 +447,9 @@
   # @ValidRange 0x80000001 | 0 - 4
   gEfiMdePkgTokenSpaceGuid.PcdDefaultTerminalType|3
 
+  # Hypothetically, remove all but the trusted console input, but there's no callback
+  gEfiSecurityPkgTokenSpaceGuid.PcdUserPhysicalPresence|TRUE
+
 [PcdsFixedAtBuild.IA32]
   ######################################
   # Edk2 Configuration
@@ -522,7 +537,7 @@
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdLowPowerS0Idle|1
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdPciExpNative|1
 
-  # Thunderbolt Configuration (FIXME: Remove if not supporting Newgate)
+  # Thunderbolt Configuration (FIXME: Remove if not supporting Newgate and RayleighSLS)
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdDTbtAcDcSwitch|0x0
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdDTbtAcpiGpeSignature|0
   gKabylakeOpenBoardPkgTokenSpaceGuid.PcdDTbtAcpiGpeSignaturePorting|0
@@ -567,5 +582,5 @@
 !endif
 !if gMinPlatformPkgTokenSpaceGuid.PcdTpm2Enable == TRUE
   gEfiSecurityPkgTokenSpaceGuid.PcdTcgPhysicalPresenceInterfaceVer|L"TCG2_VERSION"|gTcg2ConfigFormSetGuid|0x0|"1.3"|NV,BS
-  gEfiSecurityPkgTokenSpaceGuid.PcdTpm2AcpiTableRev|L"TCG2_VERSION"|gTcg2ConfigFormSetGuid|0x8|3|NV,BS
+  gEfiSecurityPkgTokenSpaceGuid.PcdTpm2AcpiTableRev|L"TCG2_VERSION"|gTcg2ConfigFormSetGuid|0x8|4|NV,BS
 !endif
